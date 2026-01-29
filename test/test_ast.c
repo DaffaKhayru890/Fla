@@ -1,82 +1,114 @@
 #include "../include/ast.h"
 #include "stdio.h"
+#include "./unity.h"
+#include "./unity_internals.h"
 
-void print_ast(ASTNode *node, int indent) {
-    if(node == NULL) return;
+void setUp(void) {}
+void tearDown(void) {}
 
-    for(int i = 0; i < indent; i++) printf(" "); 
+void test_root_node(void) {
+    ASTNode *root = create_root_node();
 
-    switch(node->type) {
-        case NODE_ROOT:
-            printf("ROOT:\n");
+    TEST_ASSERT_EQUAL(NODE_ROOT, root->type);
+    TEST_ASSERT_EQUAL(NULL, root->children);
+    TEST_ASSERT_EQUAL_INT(0, root->child_count);
 
-            for(int i = 0; i < node->child_count; i++) {
-                print_ast(node->children[i], indent + 3);
-            }
-        break;
+    free_node(root);
+}
 
-        case NODE_MODULE:
-            printf("MODULE: (name: %s)\n", node->module.name);
+void test_module_node(void) {
+    ASTNode *root = create_root_node();
+    ASTNode *module = create_module_node(root, "main");
 
-            for(int i = 0; i < node->child_count; i++) {
-                print_ast(node->children[i], indent + 3);
-            }
-        break;
+    TEST_ASSERT_EQUAL(NODE_MODULE, module->type);
+    TEST_ASSERT_EQUAL(NULL, module->children);
+    TEST_ASSERT_EQUAL_INT(0, module->child_count);
+    TEST_ASSERT_EQUAL_STRING("main", module->module.name);
 
-        case NODE_FUNCTION_DECLARATION:
-            printf("FUNCTION DECLARATION: (name: %s, return type: %s)\n", node->function_declaration.identifier, node->function_declaration.return_type);
+    free_node(root);
+}
 
-            for(int i = 0; i < node->child_count; i++) {
-                print_ast(node->children[i], indent + 3);
-            }
-        break;
+void test_function_declaration_node(void) {
+    ASTNode *root = create_root_node();
+    ASTNode *module = create_module_node(root, "main");
+    ASTNode *function = create_function_declaration_node(module, NULL, "main", "void");
 
-        case NODE_BLOCK:
-            printf("BLOCK:\n");
+    TEST_ASSERT_EQUAL(NODE_FUNCTION_DECLARATION, function->type);
+    TEST_ASSERT_EQUAL(NULL, function->children);
+    TEST_ASSERT_EQUAL_INT(0, function->child_count);
+    TEST_ASSERT_EQUAL_STRING("main", function->function_declaration.identifier);
+    TEST_ASSERT_EQUAL_STRING("void", function->function_declaration.return_type);
 
-            for(int i = 0; i < node->child_count; i++) {
-                print_ast(node->children[i], indent + 3);
-            }
-        break;
+    free_node(root);
+}
 
-        case NODE_FUNCTION_CALL:
-            printf("FUNCTION CALL:\n");
+void test_block_node(void) {
+    ASTNode *root = create_root_node();
+    ASTNode *module = create_module_node(root, "main");
+    ASTNode *function = create_function_declaration_node(module, NULL, "main", "void");
+    ASTNode *block = create_block_node(function);
 
-            for(int i = 0; i < node->child_count; i++) {
-                print_ast(node->children[i], indent + 3);
-            }
-        break;
+    TEST_ASSERT_EQUAL(NODE_BLOCK, block->type);
+    TEST_ASSERT_EQUAL(NULL, block->children);
+    TEST_ASSERT_EQUAL_INT(0, block->child_count);
 
-        case NODE_ARGUMENT:
-            printf("ARGUMENT:\n");
+    free_node(root);
+}
 
-            for(int i = 0; i < node->child_count; i++) {
-                print_ast(node->children[i], indent + 3);
-            }
-        break;
+void test_function_call_node(void) {
+    ASTNode *root = create_root_node();
+    ASTNode *module = create_module_node(root, "main");
+    ASTNode *function = create_function_declaration_node(module, NULL, "main", "void");
+    ASTNode *block = create_block_node(function);
+    ASTNode *function_call = create_function_call_node(block, "say");
 
-        case NODE_STRING_LITERAL:
-            printf("STRING LITERAL: (value: %s)\n", node->string_literal.value);
-        break;
+    TEST_ASSERT_EQUAL(NODE_FUNCTION_CALL, function_call->type);
+    TEST_ASSERT_EQUAL(NULL, function_call->children);
+    TEST_ASSERT_EQUAL_INT(0, function_call->child_count);
+    TEST_ASSERT_EQUAL_STRING("say", function_call->function_call_node.identifier);
 
-        default:
-            printf("END");
-    }
+    free_node(root);
+}
+
+void test_argument_node(void) {
+    ASTNode *root = create_root_node();
+    ASTNode *module = create_module_node(root, "main");
+    ASTNode *function = create_function_declaration_node(module, NULL, "main", "void");
+    ASTNode *block = create_block_node(function);
+    ASTNode *function_call = create_function_call_node(block, "say");
+    ASTNode *argument = create_argument_node(function_call);
+
+    TEST_ASSERT_EQUAL(NODE_ARGUMENT, argument->type);
+    TEST_ASSERT_EQUAL(NULL, argument->child);
+
+    free_node(root);
+}
+
+void test_string_literal_node(void) {
+    ASTNode *root = create_root_node();
+    ASTNode *module = create_module_node(root, "main");
+    ASTNode *function = create_function_declaration_node(module, NULL, "main", "void");
+    ASTNode *block = create_block_node(function);
+    ASTNode *function_call = create_function_call_node(block, "say");
+    ASTNode *argument = create_argument_node(function_call);
+    ASTNode *string_literal = create_string_literal_node(argument, "Hello");
+
+    TEST_ASSERT_EQUAL(NODE_STRING_LITERAL, string_literal->type);
+    TEST_ASSERT_EQUAL_STRING("Hello", string_literal->string_literal.value);
+
+    free_node(root);
 }
 
 int main() {
-     printf("======== AST ========\n");
+    UNITY_BEGIN();
 
-    ASTNode *root = create_root_node();
-    ASTNode *program = create_module_node(root, "main");
-    ASTNode *function = create_function_declaration_node(program, NULL,"main", "void");
-    ASTNode *block = create_block_node(function);
-    ASTNode *argument = create_argument_node(block);
-    ASTNode *string = create_string_literal_node(argument, "Hello");
+    RUN_TEST(test_root_node);
+    RUN_TEST(test_module_node);
+    RUN_TEST(test_function_declaration_node);
+    RUN_TEST(test_block_node);
+    RUN_TEST(test_function_call_node);
+    RUN_TEST(test_argument_node);
+    RUN_TEST(test_string_literal_node);
 
-    print_ast(root, 0);
-
-    // free_ast(root, program, function_satu, block, statement, expression);
-
-    return 0;
+    return UNITY_END();
 };

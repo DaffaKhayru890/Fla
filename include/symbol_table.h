@@ -32,11 +32,15 @@ struct ScopeNode {
     ScopeNode *parent;
 };
 
-ScopeNode *init_scope(char *name, int level, ScopeNode *parent);
+ScopeNode *create_scope(char *name, int level, ScopeNode *parent);
 SymbolTable *create_symbol_table(ScopeNode *scope, int capacity);
 Symbol *create_symbol(SymbolTable *symbol_table, char *identifier, DataType data_type, SymbolKind symbol_kind);
 Symbol *lookup_symbol(SymbolTable *symbol_table, char *identifier);
 Symbol *lookup_nested_symbol(ScopeNode *scope, char *identifier);
 
 void add_symbol(SymbolTable *symbol_table, Symbol *new_symbol);
-void free_scope(ScopeNode *scope, SymbolTable *symbol_table, Symbol *symbol);
+
+void free_scope(ScopeNode *scope);
+void free_nested_scope(ScopeNode *scope);
+void free_symbol_table(SymbolTable *symbol_table);
+void free_symbol(Symbol *symbol);

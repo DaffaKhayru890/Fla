@@ -7,8 +7,8 @@
 #define MAX_LITERAL 256
 
 char *list_keywords[] = {
-    "void",
     "fun",
+    "void",
     "end",
     NULL
 };
@@ -21,7 +21,7 @@ Lexer *init_lexer(char *input) {
         exit(EXIT_FAILURE);
     };
 
-    lexer->input = input;
+    lexer->input = strdup(input);
     lexer->line = 1;
     lexer->column = 1;
     lexer->pos = 0;
@@ -115,9 +115,9 @@ Token *read_keyword(Lexer *l, Token *t) {
 }
 
 Token *read_string(Lexer *l, Token *t) {
-    int pos = 0;
-    
     if(l->ch != '"') return NULL;
+    
+    int pos = 0;
 
     advanced(l);
 
@@ -210,12 +210,6 @@ Token *tokenize(Lexer *l, Token *t) {
 
         case '=':
             create_token(l , t, TK_ASSIGN, "=");
-
-            return t;
-        break;
-
-        case ';':
-            create_token(l , t, TK_SEMICOLON, ";");
 
             return t;
         break;

@@ -26,6 +26,10 @@ typedef struct {
 }BlockNode;
 
 typedef struct {
+    char *identifier;
+}FunctionCallNode;
+
+typedef struct {
     
 }ArgumentNode;
 
@@ -42,6 +46,7 @@ struct ASTNode {
         ModuleNode module;
         FunctionDeclarationNode function_declaration;
         BlockNode block;
+        FunctionCallNode function_call_node;
         ArgumentNode argument;
         StringLiteral string_literal;
     };
@@ -51,9 +56,8 @@ ASTNode *create_root_node(void);
 ASTNode *create_module_node(ASTNode *root_node, char *name);
 ASTNode *create_function_declaration_node(ASTNode *module_node, ASTNode *class_node, char *identifier, char *return_type);
 ASTNode *create_block_node(ASTNode *function_declaration_node);
-ASTNode *create_function_call_node(ASTNode *block_node);
+ASTNode *create_function_call_node(ASTNode *block_node, char *identifier);
 ASTNode *create_argument_node(ASTNode *function_call_node);
 ASTNode *create_string_literal_node(ASTNode *argument_node, char *value);
 
-void free_ast();
-void print_ast(ASTNode *node, int indent);
+void free_node(ASTNode *node);

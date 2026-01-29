@@ -4,11 +4,11 @@
 #include "stdio.h"
 #include "string.h"
 
-ScopeNode *init_scope(char *name, int level, ScopeNode *parent) {
+ScopeNode *create_scope(char *name, int level, ScopeNode *parent) {
     ScopeNode *scope_node = (ScopeNode*)malloc(sizeof(ScopeNode));
 
     if(scope_node == NULL) {
-        fprintf(stderr, "Error: can not init scope node\n");
+        fprintf(stderr, "Error: can not create scope node\n");
         exit(EXIT_FAILURE);
     }
     
@@ -19,8 +19,7 @@ ScopeNode *init_scope(char *name, int level, ScopeNode *parent) {
     }
 
     scope_node->level = level;
-    scope_node->parent = NULL;
-    scope_node->symbol_table = create_symbol_table(scope_node, 5);
+    scope_node->parent = parent;
 
     return scope_node;
 }
@@ -29,7 +28,7 @@ SymbolTable *create_symbol_table(ScopeNode *scope, int capacity) {
     SymbolTable *symbol_table = (SymbolTable*)malloc(sizeof(SymbolTable));
 
     if(symbol_table == NULL) {
-        fprintf(stderr, "Error: can not init symbol table\n");
+        fprintf(stderr, "Error: can not create symbol table\n");
         exit(EXIT_FAILURE);
     }
 
@@ -41,6 +40,8 @@ SymbolTable *create_symbol_table(ScopeNode *scope, int capacity) {
         fprintf(stderr, "Error: can not create symbol table\n");
         exit(EXIT_FAILURE);
     }
+
+    scope->symbol_table = symbol_table;
 
     return symbol_table;
 }
@@ -61,6 +62,8 @@ Symbol *create_symbol(SymbolTable *symbol_table, char *identifier, DataType data
 
     symbol->data_type = data_type;
     symbol->symbol_kind = symbol_kind;
+
+    symbol_table->symbol[symbol_table->count] = symbol;
 
     return symbol;
 }
@@ -114,4 +117,33 @@ void add_symbol(SymbolTable *symbol_table, Symbol *new_symbol) {
 
     symbol_table->symbol[symbol_table->count] = new_symbol; 
     symbol_table->count++;
+}
+
+void free_scope(ScopeNode *scope) {
+    if(scope == NULL) return;
+
+    free(scope->name);
+    free(scope);
+}
+
+void free_nested_scope(ScopeNode *scope) {
+    if(scope == NULL) return;
+
+    for(int i = 0; i < scope->level; i++) {
+        free_scope(scope->parent);
+    }
+}
+
+void free_symbol_table(SymbolTable *symbol_table) {
+    if(symbol_table == NULL) return;
+
+    free(symbol_table->symbol);
+    free(symbol_table);
+}
+
+void free_symbol(Symbol *symbol) {
+    if(symbol == NULL) return;
+
+    free(symbol->identifier);
+    free(symbol);
 }

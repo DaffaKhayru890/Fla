@@ -1,35 +1,113 @@
-#include "../include/utils.h"
 #include "../include/lexer.h"
+#include "./unity.h"
+#include "./unity_internals.h"
+
 #include "stdio.h"
 
-int main() {
-    char *list_tokens[] = {
-        "TK_KEYWORD",
-        "TK_IDENTIFIER",
-        "TK_STRING",
-        "TK_NUMBER",
-        "TK_LPAREN",
-        "TK_RPAREN",
-        "TK_RARROW",
-        "TK_SEMICOLON",
-        "TK_COLON",
-        "TK_ASSIGN",
-        "TK_EMPTY",
-        "TK_EOF"
-    };
+void setUp(void) {}
+void tearDown(void) {}
 
-    char *source_code = read_file("../example/function.vla");
+void test_keyword_fun(void) {   
+    char *code = "fun";
 
-    Lexer *lexer = init_lexer(source_code);
+    Lexer *l = init_lexer(code);
+    Token *t = init_token();
+
+    tokenize(l, t);
+
+    TEST_ASSERT_EQUAL(TK_KEYWORD, t->type);
+    TEST_ASSERT_EQUAL_STRING("fun", t->literal);
+
+    free_lexer(l, t);
+}
+
+void test_keyword_void(void) {   
+    char *code = "void";
+
+    Lexer *l = init_lexer(code);
+    Token *t = init_token();
+
+    tokenize(l, t);
+
+    TEST_ASSERT_EQUAL(TK_KEYWORD, t->type);
+    TEST_ASSERT_EQUAL_STRING("void", t->literal);
+
+    free_lexer(l, t);
+}
+
+void test_keyword_end(void) {   
+    char *code = "end";
+
+    Lexer *l = init_lexer(code);
+    Token *t = init_token();
+
+    tokenize(l, t);
+
+    TEST_ASSERT_EQUAL(TK_KEYWORD, t->type);
+    TEST_ASSERT_EQUAL_STRING("end", t->literal);
+
+    free_lexer(l, t);
+}
+
+void test_identifier(void) {   
+    char *code = "main";
+
+    Lexer *l = init_lexer(code);
+    Token *t = init_token();
+
+    tokenize(l, t);
+
+    TEST_ASSERT_EQUAL(TK_IDENTIFIER, t->type);
+    TEST_ASSERT_EQUAL_STRING("main", t->literal);
+
+    free_lexer(l, t);
+}
+
+void test_string(void) {
+    char *source = "\"hello\"";
+    Lexer *lexer = init_lexer(source);
     Token *token = init_token();
-
-    do{
-        tokenize(lexer, token);
-
-        printf("type: %s, literal: %-10s (%d,%d)\n", token->type[list_tokens], token->literal ,lexer->line, lexer->column);
-    }while(token->type != TK_EOF);
-
+    
+    tokenize(lexer, token);
+    
+    TEST_ASSERT_EQUAL(TK_STRING, token->type);
+    TEST_ASSERT_EQUAL_STRING("hello", token->literal);
+    
     free_lexer(lexer, token);
+}
 
-    return 0;
+void test_operators(void) {
+    char *source = "( ) -> : =";
+    Lexer *lexer = init_lexer(source);
+    Token *token = init_token();
+    
+    tokenize(lexer, token);
+    TEST_ASSERT_EQUAL(TK_LPAREN, token->type);
+    
+    tokenize(lexer, token);
+    TEST_ASSERT_EQUAL(TK_RPAREN, token->type);
+    
+    tokenize(lexer, token);
+    TEST_ASSERT_EQUAL(TK_RARROW, token->type);
+    
+    tokenize(lexer, token);
+    TEST_ASSERT_EQUAL(TK_COLON, token->type);
+    
+    tokenize(lexer, token);
+    TEST_ASSERT_EQUAL(TK_ASSIGN, token->type);
+    
+    free_lexer(lexer, token);
+}
+
+int main(void) {
+    UNITY_BEGIN();
+
+    RUN_TEST(test_keyword_fun);
+    RUN_TEST(test_keyword_void);
+    RUN_TEST(test_keyword_end);
+    RUN_TEST(test_identifier);
+    RUN_TEST(test_string);
+    RUN_TEST(test_operators);
+
+    return UNITY_END();
 }
