@@ -2,66 +2,58 @@
 
 typedef enum {
     NODE_ROOT,
-    NODE_PROGRAM,
-    NODE_FUNCTION,
+    NODE_MODULE,
+    NODE_FUNCTION_DECLARATION,
     NODE_BLOCK,
-    NODE_STATEMENT,
-    NODE_EXPRESSION,
+    NODE_FUNCTION_CALL,
+    NODE_ARGUMENT,
+    NODE_STRING_LITERAL
 }NodeType;
 
 typedef struct ASTNode ASTNode;
 
 typedef struct {
-    struct ASTNode **children;
-    int child_count;
-}ProgramNode;
+    char *name;
+}ModuleNode;
 
 typedef struct {
-    struct ASTNode **children;
-    char *return_type;
     char *identifier;
-    int child_count;
-}FunctionNode;
+    char *return_type;
+}FunctionDeclarationNode;
 
 typedef struct {
-    struct ASTNode **children;
-    int child_count;
+    
 }BlockNode;
 
 typedef struct {
-    struct ASTNode *child;
-}StatementNode;
+    
+}ArgumentNode;
 
-typedef union {
-    char *value_char;
-    int value_int;
-}ExpressionNode;
+typedef struct {
+    char *value;
+}StringLiteral;
 
 struct ASTNode {
     NodeType type;
     struct ASTNode **children;
+    struct ASTNode *child;
     int child_count;
     union{
-        ProgramNode program;
-        FunctionNode function;
+        ModuleNode module;
+        FunctionDeclarationNode function_declaration;
         BlockNode block;
-        StatementNode statement;
-        ExpressionNode expression;
+        ArgumentNode argument;
+        StringLiteral string_literal;
     };
 };
 
 ASTNode *create_root_node(void);
-ASTNode *create_program_node(ASTNode *root_node);
-ASTNode *create_function_node(ASTNode *program_node, char *identifier, char *return_type);
-ASTNode *create_block_node(ASTNode *function_node);
-ASTNode *create_statement_node(ASTNode *block_node);
-ASTNode *create_expression_node(ASTNode *statement_node, int value);
+ASTNode *create_module_node(ASTNode *root_node, char *name);
+ASTNode *create_function_declaration_node(ASTNode *module_node, ASTNode *class_node, char *identifier, char *return_type);
+ASTNode *create_block_node(ASTNode *function_declaration_node);
+ASTNode *create_function_call_node(ASTNode *block_node);
+ASTNode *create_argument_node(ASTNode *function_call_node);
+ASTNode *create_string_literal_node(ASTNode *argument_node, char *value);
 
-void free_ast(ASTNode *root_node, 
-    ASTNode *program_node, 
-    ASTNode *function_node, 
-    ASTNode *block_node, 
-    ASTNode *statement_node,
-    ASTNode *expression_node
-);
+void free_ast();
 void print_ast(ASTNode *node, int indent);

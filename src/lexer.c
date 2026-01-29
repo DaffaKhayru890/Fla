@@ -7,8 +7,9 @@
 #define MAX_LITERAL 256
 
 char *list_keywords[] = {
-    "int",
-    "return",
+    "void",
+    "fun",
+    "end",
     NULL
 };
 
@@ -31,22 +32,27 @@ Token *init_token(void) {
 
     if(token == NULL) perror("Can not initilize token");
 
-    strcpy(token->literal, "");
+    token->literal[0] = '\0';
     token->type = TK_EMPTY;
 
     return token;
 }
 
 void advanced(Lexer *l) {
-    if(l->ch == '\0') l->ch = '\0';
-
-    l->pos++;
-    l->column++;
-    l->ch = l->input[l->pos];
+    if(l->ch != '\0') {
+        l->pos++;
+        l->column++;
+        l->ch = l->input[l->pos];
+    }
 }
 
 void skip_whitespace(Lexer *l) {
     while(l->ch == ' ' || l->ch == '\t' || l->ch == '\n' || l->ch == '\r') {
+        if(l->ch == '\n') {
+            l->line++;
+            l->column = 0;
+        }
+
         advanced(l);
     }
 }
@@ -68,6 +74,8 @@ bool is_keyword(Lexer *l, char *keyword) {
 void create_token(Lexer *l, Token *t, TokenType type, char *literal_char) {
     strcpy(t->literal, literal_char);
     t->type = type;
+
+    advanced(l);
 }
 
 void free_lexer(Lexer *l, Token *t) {
@@ -80,7 +88,7 @@ void free_lexer(Lexer *l, Token *t) {
 Token *read_keyword(Lexer *l, Token *t) {
     int pos = 0;
     
-    while(isalnum(l->ch) && (t->literal[pos] < MAX_LITERAL-1)) {
+    while((isalnum(l->ch) || l->ch == '_') && (pos < MAX_LITERAL-1)) {
         t->literal[pos] = l->ch;
         advanced(l);
 
@@ -100,10 +108,32 @@ Token *read_keyword(Lexer *l, Token *t) {
     }
 }
 
+Token *read_string(Lexer *l, Token *t) {
+    int pos = 0;
+    
+    if(l->ch != '"') return NULL;
+
+    advanced(l);
+
+    while(l->ch != '"' && l->ch != '\0' && (pos < MAX_LITERAL-1)) {
+        t->literal[pos] = l->ch;
+        advanced(l);
+
+        pos++;
+    }
+
+    if(l->ch == '"') advanced(l);
+
+    t->literal[pos] = '\0';
+    t->type = TK_STRING;
+
+    return t;
+}
+
 Token *read_digit(Lexer *l, Token *t) {
     int pos = 0;
     
-    while(isdigit(l->ch) && (t->literal[pos] < MAX_LITERAL-1)) {
+    while(isdigit(l->ch) && (pos < MAX_LITERAL-1)) {
         t->literal[pos] = l->ch;
         advanced(l);
 
@@ -117,62 +147,76 @@ Token *read_digit(Lexer *l, Token *t) {
     return t;
 }
 
+Token *read_rarrow(Lexer *l, Token *t) {
+    if(l->ch == '-' && l->input[l->pos+1] == '>') {
+        t->literal[0] = '-';
+        t->literal[1] = '>';
+        t->literal[2] = '\0';
+
+        t->type = TK_RARROW;
+
+        advanced(l);
+        advanced(l);
+
+        return t;
+    }
+
+    return t;
+}
+
 Token *tokenize(Lexer *l, Token *t) {
     TokenType token_type;
 
-    if(l->ch == '\n') l->line++;
-
     skip_whitespace(l);
+
+    if(l->ch == '-' && l->input[l->pos+1] == '>' && l->input[l->pos+1] != '\0') return read_rarrow(l, t);
 
     if(isalpha(l->ch)) {
         return read_keyword(l, t);
+    }
+
+    if(l->ch == '"') {
+        return read_string(l, t);
     }
 
     if(isdigit(l->ch)) {
         return read_digit(l, t);
     }
 
-    char ch = l->ch;
-
     switch(l->ch) {
         case '(':
             create_token(l , t, TK_LPAREN, "(");
-            advanced(l);
 
             return t;
         break;
 
         case ')':
             create_token(l , t, TK_RPAREN, ")");
-            advanced(l);
 
             return t;
         break;
 
-        case '{':
-            create_token(l , t, TK_LBRACE, "{");
-            advanced(l);
+        case ':':
+            create_token(l , t, TK_COLON, ":");
 
             return t;
         break;
 
-        case '}':
-            create_token(l , t, TK_RBRACE, "}");
-            advanced(l);
+        case '=':
+            create_token(l , t, TK_ASSIGN, "=");
 
             return t;
         break;
 
         case ';':
             create_token(l , t, TK_SEMICOLON, ";");
-            advanced(l);
 
             return t;
         break;
 
         case '\0':
             create_token(l , t, TK_EOF, "\0");
-            
+
             return t;
         break;
     }
