@@ -1,4 +1,4 @@
-#include "../include/ast.h"
+#include "../../include/ast.h"
 #include "stdio.h"
 #include "stdlib.h"
 
@@ -107,7 +107,7 @@ ASTNode *create_argument_node(ASTNode *function_call_node) {
 
     add_children(function_call_node, argument_node);
 
-    return function_call_node;
+    return argument_node;
 }
 
 ASTNode *create_string_literal_node(ASTNode *argument_node, char *value) {

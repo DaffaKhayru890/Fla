@@ -2,7 +2,7 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "string.h"
-#include "../include/lexer.h"
+#include "../../include/lexer.h"
 
 #define MAX_LITERAL 256
 
@@ -16,7 +16,10 @@ char *list_keywords[] = {
 Lexer *init_lexer(char *input) {
     Lexer *lexer = (Lexer *)malloc(sizeof(Lexer));
 
-    if(lexer == NULL) perror("Can not initilize lexer");
+    if(lexer == NULL) {
+        fprintf(stderr, "Error: can not init lexer\n");
+        exit(EXIT_FAILURE);
+    };
 
     lexer->input = input;
     lexer->line = 1;
@@ -30,7 +33,10 @@ Lexer *init_lexer(char *input) {
 Token *init_token(void) {
     Token *token = (Token *)malloc(sizeof(Token));
 
-    if(token == NULL) perror("Can not initilize token");
+    if(token == NULL) {
+        fprintf(stderr, "Error: can not init token\n");
+        exit(EXIT_FAILURE);
+    };
 
     token->literal[0] = '\0';
     token->type = TK_EMPTY;

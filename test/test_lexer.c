@@ -1,4 +1,4 @@
-#include "../include/helper.h"
+#include "../include/utils.h"
 #include "../include/lexer.h"
 #include "stdio.h"
 
@@ -18,7 +18,7 @@ int main() {
         "TK_EOF"
     };
 
-    char *source_code = read_file("../example/function.fla");
+    char *source_code = read_file("../example/function.vla");
 
     Lexer *lexer = init_lexer(source_code);
     Token *token = init_token();

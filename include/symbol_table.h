@@ -2,32 +2,41 @@
 
 #include "stdbool.h"
 
+typedef struct ScopeNode ScopeNode;
+
 typedef enum {
     SYMBOL_FUNCTION,
+    SYMBOL_VARIABLE,
 }SymbolKind;
 
 typedef enum {
     TYPE_INT
 }DataType;
 
-typedef enum {
-    SCOPE_GLOBAL
-}Scope;
-
 typedef struct {
     SymbolKind symbol_kind;
     DataType data_type;
     char *identifier;
-    Scope scope;
 }Symbol;
 
 typedef struct {
     Symbol **symbol;
-    int symbol_capacity;
-    int symbol_count;
+    int capacity;
+    int count;
 }SymbolTable;
 
-SymbolTable *init_symbol_table(int capacity);
-Symbol *create_symbol(SymbolTable *symbol_table, char *identifier, DataType data_type, SymbolKind symbol_kind, Scope scope);
+struct ScopeNode {
+    char *name;
+    int level;
+    SymbolTable *symbol_table;
+    ScopeNode *parent;
+};
+
+ScopeNode *init_scope(char *name, int level, ScopeNode *parent);
+SymbolTable *create_symbol_table(ScopeNode *scope, int capacity);
+Symbol *create_symbol(SymbolTable *symbol_table, char *identifier, DataType data_type, SymbolKind symbol_kind);
+Symbol *lookup_symbol(SymbolTable *symbol_table, char *identifier);
+Symbol *lookup_nested_symbol(ScopeNode *scope, char *identifier);
 
 void add_symbol(SymbolTable *symbol_table, Symbol *new_symbol);
+void free_scope(ScopeNode *scope, SymbolTable *symbol_table, Symbol *symbol);
