@@ -1,7 +1,7 @@
 #pragma once 
 
 typedef enum {
-    NODE_ROOT,
+    NODE_PROGRAM,
     NODE_MODULE,
     NODE_FUNCTION_DECLARATION,
     NODE_BLOCK,
@@ -52,7 +52,7 @@ struct ASTNode {
     };
 };
 
-ASTNode *create_root_node(void);
+ASTNode *create_program_node();
 ASTNode *create_module_node(char *name);
 ASTNode *create_function_declaration_node(char *identifier, char *return_type);
 ASTNode *create_block_node();
@@ -60,6 +60,6 @@ ASTNode *create_function_call_node(char *identifier);
 ASTNode *create_argument_node();
 ASTNode *create_string_literal_node(char *value);
 
-void add_child_to_parent(ASTNode *parent_node, ASTNode *child);
+void add_child_to_parent_children(ASTNode *parent_node, ASTNode *child);
 
-void free_node(ASTNode *node);
+void free_ast_node(ASTNode *node);

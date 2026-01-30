@@ -65,6 +65,7 @@ void create_token(Lexer *l, Token *t, TokenType type, char *literal_char) {
 
 void free_lexer(Lexer *l) {
     if(l != NULL) {
+        free(l->input);
         free(l);
     }
 }
@@ -87,11 +88,7 @@ Token *read_keyword(Lexer *l, Token *t) {
 
     t->literal[pos] = '\0';
 
-    if(strcmp(t->literal, "module") == 0) {
-        t->type = TK_KEYWORD_MODULE;
-
-        return t;
-    }else if(strcmp(t->literal, "fun") == 0) {
+    if(strcmp(t->literal, "fun") == 0) {
         t->type = TK_KEYWORD_FUN;
 
         return t;

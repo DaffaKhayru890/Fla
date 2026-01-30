@@ -1,5 +1,3 @@
-module main
-
 fun main() -> void do
     print("hello")
 end

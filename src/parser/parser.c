@@ -12,22 +12,14 @@ Parser *init_parser(Lexer *l, Token *t) {
         exit(EXIT_FAILURE);
     }
 
+    printf("%s", t->literal);
+
     parser->lexer = l;
     parser->current = tokenize(l,t);
 
+    printf("%s", parser->current->literal);
+
     return parser;
-}
-
-Token *current_token(Parser *p) {
-    return p->current;
-}
-
-bool check_token(Parser *p, TokenType type) {
-    if(p->current->type == type) {
-        return true;
-    }
-
-    return false;
 }
 
 void free_parser(Parser *p) {
@@ -38,49 +30,31 @@ void free_parser(Parser *p) {
     return;
 } 
 
+char *token_names[] = {
+    "TK_KEYWORD_MODULE",
+    "TK_KEYWORD_FUN",
+    "TK_KEYWORD_VOID",
+    "TK_KEYWORD_DO",
+    "TK_KEYWORD_END",
+    "TK_IDENTIFIER",
+    "TK_STRING",
+    "TK_NUMBER",
+    "TK_LPAREN",
+    "TK_RPAREN",
+    "TK_RARROW",
+    "TK_SEMICOLON",
+    "TK_COLON",
+    "TK_ASSIGN",
+    "TK_EMPTY",
+    "TK_EOF"
+};
+
 void eat_token(Parser *p, TokenType type, Lexer *l, Token *t) {
     if(p->current->type == type) {
         free(p->current);
-        p->current = tokenize(l,t);
+        p->current = tokenize(l, t);
     }else {
-        fprintf(stderr, "Error: parse failed, expected type%d, but get %d\n", p->current->type, type);
+        fprintf(stderr, "Error: parse failed, expected type%s, but get %s\n", token_names[p->current->type], token_names[p->current->type]);
         exit(EXIT_FAILURE);
     }
-}
-
-ASTNode *parser_module(ASTNode *root_node, Parser *p, Lexer *l, Token *t) {
-    if (root_node == NULL) {
-        fprintf(stderr, "Error: root node not found\n");
-        exit(EXIT_FAILURE);
-    }
-
-    eat_token(p, TK_KEYWORD , l, t);
-    char *module_name = t->literal;
-
-
-    ASTNode *module = create_module_node(root_node, module_name);
-
-    eat_token(p, p->current->type, l, t);
-    
-    return  module;
-}
-
-ASTNode *parser_function_declaration(ASTNode *module_node, Parser *p, Lexer *l, Token *t) {
-    if (module_node == NULL) {
-        fprintf(stderr, "Error: module node node not found\n");
-        exit(EXIT_FAILURE);
-    }
-
-    eat_token(p, TK_KEYWORD , l, t);
-    char *function_declaration_name = t->literal;
-
-    eat_token(p, TK_IDENTIFIER , l, t);
-    eat_token(p, TK_RARROW , l, t);
-    
-
-    ASTNode *function_declration = create_function_declaration_node(module_name, NULL, function_declaration_name, );
-
-    eat_token(p, p->current->type, l, t);
-    
-    return  module;
 }

@@ -1,26 +1,27 @@
 #include "../include/lexer.h"
 #include "./unity.h"
 #include "./unity_internals.h"
+#include "../include/utils.h"
 
 #include "stdio.h"
 
 void setUp(void) {}
 void tearDown(void) {}
 
-void test_keyword_module(void) {   
-    char *code = "module";
+// void test_keyword_module(void) {   
+//     char *code = "module";
 
-    Lexer *l = init_lexer(code);
-    Token *t = init_token();
+//     Lexer *l = init_lexer(code);
+//     Token *t = init_token();
 
-    tokenize(l, t);
+//     tokenize(l, t);
 
-    TEST_ASSERT_EQUAL(TK_KEYWORD_MODULE, t->type);
-    TEST_ASSERT_EQUAL_STRING("module", t->literal);
+//     TEST_ASSERT_EQUAL(TK_KEYWORD_MODULE, t->type);
+//     TEST_ASSERT_EQUAL_STRING("module", t->literal);
 
-    free_lexer(l);
-    free_token(t);
-}
+//     free_lexer(l);
+//     free_token(t);
+// }
 
 void test_keyword_fun(void) {   
     char *code = "fun";
@@ -143,7 +144,7 @@ void test_operators(void) {
 int main(void) {
     UNITY_BEGIN();
 
-    RUN_TEST(test_keyword_module);
+    // RUN_TEST(test_keyword_module);
     RUN_TEST(test_keyword_fun);
     RUN_TEST(test_keyword_void);
     RUN_TEST(test_keyword_do);
@@ -151,6 +152,22 @@ int main(void) {
     RUN_TEST(test_identifier);
     RUN_TEST(test_string);
     RUN_TEST(test_operators);
+
+    printf("\n\n\n");
+
+    char *source = read_file("../example/main.fla");
+
+    Lexer *l = init_lexer(source);
+    Token *t = init_token();
+
+    do{
+        tokenize(l,t);
+        printf("%s\n", t->literal);
+    }while(t->type != TK_EOF);
+
+    free_token(t);
+    free_lexer(l);
+    
 
     return UNITY_END();
 }
