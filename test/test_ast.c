@@ -18,85 +18,80 @@ void test_root_node(void) {
 
 void test_module_node(void) {
     ASTNode *root = create_root_node();
-    ASTNode *module = create_module_node(root, "main");
+
+    ASTNode *module = create_module_node("main");
+    add_child_to_parent(root, module);
 
     TEST_ASSERT_EQUAL(NODE_MODULE, module->type);
     TEST_ASSERT_EQUAL(NULL, module->children);
     TEST_ASSERT_EQUAL_INT(0, module->child_count);
     TEST_ASSERT_EQUAL_STRING("main", module->module.name);
+    TEST_ASSERT_EQUAL_PTR(module, root->children[0]);
 
-    free_node(root);
+    free_node(module);
 }
 
 void test_function_declaration_node(void) {
-    ASTNode *root = create_root_node();
-    ASTNode *module = create_module_node(root, "main");
-    ASTNode *function = create_function_declaration_node(module, NULL, "main", "void");
+    ASTNode *module = create_module_node("main");
+
+    ASTNode *function = create_function_declaration_node("main", "void");
+    add_child_to_parent(module, function);
 
     TEST_ASSERT_EQUAL(NODE_FUNCTION_DECLARATION, function->type);
     TEST_ASSERT_EQUAL(NULL, function->children);
     TEST_ASSERT_EQUAL_INT(0, function->child_count);
     TEST_ASSERT_EQUAL_STRING("main", function->function_declaration.identifier);
     TEST_ASSERT_EQUAL_STRING("void", function->function_declaration.return_type);
+    TEST_ASSERT_EQUAL_PTR(function, module->children[0]);
 
-    free_node(root);
+    free_node(function);
 }
 
 void test_block_node(void) {
-    ASTNode *root = create_root_node();
-    ASTNode *module = create_module_node(root, "main");
-    ASTNode *function = create_function_declaration_node(module, NULL, "main", "void");
-    ASTNode *block = create_block_node(function);
+    ASTNode *function = create_function_declaration_node("main", "void");
+
+    ASTNode *block = create_block_node();
+    add_child_to_parent(function, block);
 
     TEST_ASSERT_EQUAL(NODE_BLOCK, block->type);
     TEST_ASSERT_EQUAL(NULL, block->children);
     TEST_ASSERT_EQUAL_INT(0, block->child_count);
+    TEST_ASSERT_EQUAL_PTR(block, function->children[0]);
 
-    free_node(root);
+    free_node(block);
 }
 
 void test_function_call_node(void) {
-    ASTNode *root = create_root_node();
-    ASTNode *module = create_module_node(root, "main");
-    ASTNode *function = create_function_declaration_node(module, NULL, "main", "void");
-    ASTNode *block = create_block_node(function);
-    ASTNode *function_call = create_function_call_node(block, "say");
+    ASTNode *block = create_block_node();
+
+    ASTNode *function_call = create_function_call_node("say");
+    add_child_to_parent(block, function_call);
 
     TEST_ASSERT_EQUAL(NODE_FUNCTION_CALL, function_call->type);
     TEST_ASSERT_EQUAL(NULL, function_call->children);
     TEST_ASSERT_EQUAL_INT(0, function_call->child_count);
     TEST_ASSERT_EQUAL_STRING("say", function_call->function_call_node.identifier);
+    TEST_ASSERT_EQUAL_PTR(function_call, block->children[0]);
 
-    free_node(root);
+    free_node(function_call);
 }
 
 void test_argument_node(void) {
-    ASTNode *root = create_root_node();
-    ASTNode *module = create_module_node(root, "main");
-    ASTNode *function = create_function_declaration_node(module, NULL, "main", "void");
-    ASTNode *block = create_block_node(function);
-    ASTNode *function_call = create_function_call_node(block, "say");
-    ASTNode *argument = create_argument_node(function_call);
+    ASTNode *argument = create_argument_node();
 
     TEST_ASSERT_EQUAL(NODE_ARGUMENT, argument->type);
     TEST_ASSERT_EQUAL(NULL, argument->child);
 
-    free_node(root);
+    free_node(argument);
 }
 
 void test_string_literal_node(void) {
-    ASTNode *root = create_root_node();
-    ASTNode *module = create_module_node(root, "main");
-    ASTNode *function = create_function_declaration_node(module, NULL, "main", "void");
-    ASTNode *block = create_block_node(function);
-    ASTNode *function_call = create_function_call_node(block, "say");
-    ASTNode *argument = create_argument_node(function_call);
-    ASTNode *string_literal = create_string_literal_node(argument, "Hello");
+    ASTNode *string_literal = create_string_literal_node("Hello");
 
     TEST_ASSERT_EQUAL(NODE_STRING_LITERAL, string_literal->type);
     TEST_ASSERT_EQUAL_STRING("Hello", string_literal->string_literal.value);
 
-    free_node(root);
+    free_node(string_literal);
 }
 
 int main() {

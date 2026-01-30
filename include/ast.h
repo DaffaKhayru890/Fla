@@ -53,11 +53,13 @@ struct ASTNode {
 };
 
 ASTNode *create_root_node(void);
-ASTNode *create_module_node(ASTNode *root_node, char *name);
-ASTNode *create_function_declaration_node(ASTNode *module_node, ASTNode *class_node, char *identifier, char *return_type);
-ASTNode *create_block_node(ASTNode *function_declaration_node);
-ASTNode *create_function_call_node(ASTNode *block_node, char *identifier);
-ASTNode *create_argument_node(ASTNode *function_call_node);
-ASTNode *create_string_literal_node(ASTNode *argument_node, char *value);
+ASTNode *create_module_node(char *name);
+ASTNode *create_function_declaration_node(char *identifier, char *return_type);
+ASTNode *create_block_node();
+ASTNode *create_function_call_node(char *identifier);
+ASTNode *create_argument_node();
+ASTNode *create_string_literal_node(char *value);
+
+void add_child_to_parent(ASTNode *parent_node, ASTNode *child);
 
 void free_node(ASTNode *node);

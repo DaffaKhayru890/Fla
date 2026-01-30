@@ -6,13 +6,6 @@
 
 #define MAX_LITERAL 256
 
-char *list_keywords[] = {
-    "fun",
-    "void",
-    "end",
-    NULL
-};
-
 Lexer *init_lexer(char *input) {
     Lexer *lexer = (Lexer *)malloc(sizeof(Lexer));
 
@@ -63,20 +56,6 @@ void skip_whitespace(Lexer *l) {
     }
 }
 
-bool is_keyword(Lexer *l, char *keyword) {
-    int i = 0;
-
-    while(list_keywords[i] != NULL) {
-        if(strcmp(list_keywords[i], keyword) == 0) {
-            return true;
-        }
-
-        i++;
-    }
-
-    return false;
-}
-
 void create_token(Lexer *l, Token *t, TokenType type, char *literal_char) {
     strcpy(t->literal, literal_char);
     t->type = type;
@@ -84,9 +63,14 @@ void create_token(Lexer *l, Token *t, TokenType type, char *literal_char) {
     advanced(l);
 }
 
-void free_lexer(Lexer *l, Token *t) {
-    if(l != NULL && t != NULL) {
+void free_lexer(Lexer *l) {
+    if(l != NULL) {
         free(l);
+    }
+}
+
+void free_token(Token *t) {
+    if(t != NULL) {
         free(t);
     }
 }
@@ -103,8 +87,24 @@ Token *read_keyword(Lexer *l, Token *t) {
 
     t->literal[pos] = '\0';
 
-    if(is_keyword(l, t->literal)) {
-        t->type = TK_KEYWORD;
+    if(strcmp(t->literal, "module") == 0) {
+        t->type = TK_KEYWORD_MODULE;
+
+        return t;
+    }else if(strcmp(t->literal, "fun") == 0) {
+        t->type = TK_KEYWORD_FUN;
+
+        return t;
+    }else if(strcmp(t->literal, "void") == 0) {
+        t->type = TK_KEYWORD_VOID;
+
+        return t;
+    }else if(strcmp(t->literal, "do") == 0) {
+        t->type = TK_KEYWORD_DO;
+
+        return t;
+    }else if(strcmp(t->literal, "end") == 0) {
+        t->type = TK_KEYWORD_END;
 
         return t;
     }else {

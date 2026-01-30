@@ -5,7 +5,11 @@
 #define MAX_LITERAL 256
 
 typedef enum {
-    TK_KEYWORD,
+    TK_KEYWORD_MODULE,
+    TK_KEYWORD_FUN,
+    TK_KEYWORD_VOID,
+    TK_KEYWORD_DO,
+    TK_KEYWORD_END,
     TK_IDENTIFIER,
     TK_STRING,
     TK_NUMBER,
@@ -37,9 +41,9 @@ Token *init_token(void);
 
 void advanced(Lexer *l);
 void skip_whitespace(Lexer *l);
-bool is_keyword(Lexer *l, char *keyword);
 void create_token(Lexer *l, Token *t, TokenType type, char *literal_char);
-void free_lexer(Lexer *l, Token *t);
+void free_lexer(Lexer *l);
+void free_token(Token *t);
 
 Token *read_keyword(Lexer *l, Token *t);
 Token *read_string(Lexer *l, Token *t);

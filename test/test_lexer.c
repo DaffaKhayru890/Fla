@@ -7,6 +7,21 @@
 void setUp(void) {}
 void tearDown(void) {}
 
+void test_keyword_module(void) {   
+    char *code = "module";
+
+    Lexer *l = init_lexer(code);
+    Token *t = init_token();
+
+    tokenize(l, t);
+
+    TEST_ASSERT_EQUAL(TK_KEYWORD_MODULE, t->type);
+    TEST_ASSERT_EQUAL_STRING("module", t->literal);
+
+    free_lexer(l);
+    free_token(t);
+}
+
 void test_keyword_fun(void) {   
     char *code = "fun";
 
@@ -15,10 +30,11 @@ void test_keyword_fun(void) {
 
     tokenize(l, t);
 
-    TEST_ASSERT_EQUAL(TK_KEYWORD, t->type);
+    TEST_ASSERT_EQUAL(TK_KEYWORD_FUN, t->type);
     TEST_ASSERT_EQUAL_STRING("fun", t->literal);
 
-    free_lexer(l, t);
+    free_lexer(l);
+    free_token(t);
 }
 
 void test_keyword_void(void) {   
@@ -29,10 +45,26 @@ void test_keyword_void(void) {
 
     tokenize(l, t);
 
-    TEST_ASSERT_EQUAL(TK_KEYWORD, t->type);
+    TEST_ASSERT_EQUAL(TK_KEYWORD_VOID, t->type);
     TEST_ASSERT_EQUAL_STRING("void", t->literal);
 
-    free_lexer(l, t);
+    free_lexer(l);
+    free_token(t);
+}
+
+void test_keyword_do(void) {   
+    char *code = "do";
+
+    Lexer *l = init_lexer(code);
+    Token *t = init_token();
+
+    tokenize(l, t);
+
+    TEST_ASSERT_EQUAL(TK_KEYWORD_DO, t->type);
+    TEST_ASSERT_EQUAL_STRING("do", t->literal);
+
+    free_lexer(l);
+    free_token(t);
 }
 
 void test_keyword_end(void) {   
@@ -43,14 +75,15 @@ void test_keyword_end(void) {
 
     tokenize(l, t);
 
-    TEST_ASSERT_EQUAL(TK_KEYWORD, t->type);
+    TEST_ASSERT_EQUAL(TK_KEYWORD_END, t->type);
     TEST_ASSERT_EQUAL_STRING("end", t->literal);
 
-    free_lexer(l, t);
+    free_lexer(l);
+    free_token(t);
 }
 
 void test_identifier(void) {   
-    char *code = "main";
+    char *code = "main print";
 
     Lexer *l = init_lexer(code);
     Token *t = init_token();
@@ -60,50 +93,60 @@ void test_identifier(void) {
     TEST_ASSERT_EQUAL(TK_IDENTIFIER, t->type);
     TEST_ASSERT_EQUAL_STRING("main", t->literal);
 
-    free_lexer(l, t);
+    tokenize(l, t);
+
+    TEST_ASSERT_EQUAL(TK_IDENTIFIER, t->type);
+    TEST_ASSERT_EQUAL_STRING("print", t->literal);
+
+    free_lexer(l);
+    free_token(t);
 }
 
 void test_string(void) {
     char *source = "\"hello\"";
-    Lexer *lexer = init_lexer(source);
-    Token *token = init_token();
+    Lexer *l = init_lexer(source);
+    Token *t = init_token();
     
-    tokenize(lexer, token);
+    tokenize(l, t);
     
-    TEST_ASSERT_EQUAL(TK_STRING, token->type);
-    TEST_ASSERT_EQUAL_STRING("hello", token->literal);
+    TEST_ASSERT_EQUAL(TK_STRING, t->type);
+    TEST_ASSERT_EQUAL_STRING("hello", t->literal);
     
-    free_lexer(lexer, token);
+    free_lexer(l);
+    free_token(t);
 }
 
 void test_operators(void) {
     char *source = "( ) -> : =";
-    Lexer *lexer = init_lexer(source);
-    Token *token = init_token();
+    Lexer *l = init_lexer(source);
+    Token *t = init_token();
     
-    tokenize(lexer, token);
-    TEST_ASSERT_EQUAL(TK_LPAREN, token->type);
+    tokenize(l, t);
+    TEST_ASSERT_EQUAL(TK_LPAREN, t->type);
     
-    tokenize(lexer, token);
-    TEST_ASSERT_EQUAL(TK_RPAREN, token->type);
+    tokenize(l, t);
+    TEST_ASSERT_EQUAL(TK_RPAREN, t->type);
     
-    tokenize(lexer, token);
-    TEST_ASSERT_EQUAL(TK_RARROW, token->type);
+    tokenize(l, t);
+    TEST_ASSERT_EQUAL(TK_RARROW, t->type);
     
-    tokenize(lexer, token);
-    TEST_ASSERT_EQUAL(TK_COLON, token->type);
+    tokenize(l, t);
+    TEST_ASSERT_EQUAL(TK_COLON, t->type);
     
-    tokenize(lexer, token);
-    TEST_ASSERT_EQUAL(TK_ASSIGN, token->type);
+    tokenize(l, t);
+    TEST_ASSERT_EQUAL(TK_ASSIGN, t->type);
     
-    free_lexer(lexer, token);
+    free_lexer(l);
+    free_token(t);
 }
 
 int main(void) {
     UNITY_BEGIN();
 
+    RUN_TEST(test_keyword_module);
     RUN_TEST(test_keyword_fun);
     RUN_TEST(test_keyword_void);
+    RUN_TEST(test_keyword_do);
     RUN_TEST(test_keyword_end);
     RUN_TEST(test_identifier);
     RUN_TEST(test_string);
