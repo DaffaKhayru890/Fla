@@ -78,10 +78,6 @@ Token *read_keyword(Lexer *l, Token *t) {
         t->type = TK_KEYWORD_FUN;
 
         return t;
-    }else if(strcmp(t->literal, "void") == 0) {
-        t->type = TK_KEYWORD_VOID;
-
-        return t;
     }else if(strcmp(t->literal, "do") == 0) {
         t->type = TK_KEYWORD_DO;
 
@@ -92,22 +88,6 @@ Token *read_keyword(Lexer *l, Token *t) {
         return t;
     }else if(strcmp(t->literal, "var") == 0) {
         t->type = TK_KEYWORD_VAR;
-
-        return t;
-    }else if(strcmp(t->literal, "double") == 0) {
-        t->type = TK_KEYWORD_DOUBLE;
-
-        return t;
-    }else if(strcmp(t->literal, "char") == 0) {
-        t->type = TK_KEYWORD_CHAR;
-
-        return t;
-    }else if(strcmp(t->literal, "string") == 0) {
-        t->type = TK_KEYWORD_STRING;
-
-        return t;
-    }else if(strcmp(t->literal, "int") == 0) {
-        t->type = TK_KEYWORD_INT;
 
         return t;
     }else if(strcmp(t->literal, "if") == 0) {
@@ -136,6 +116,10 @@ Token *read_keyword(Lexer *l, Token *t) {
         return t;
     }else if(strcmp(t->literal, "use") == 0) {
         t->type = TK_KEYWORD_USE;
+
+        return t;
+    }else if(strcmp(t->literal, "return") == 0) {
+        t->type = TK_KEYWORD_RETURN;
 
         return t;
     }else {

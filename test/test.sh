@@ -10,11 +10,11 @@ if [ "$arg" = "lexer" ]; then
     ./fla
     rm ./fla
 elif [ "$arg" = "parser" ]; then
-    gcc ../src/lexer/*.c ../src/ast/*.c ../src/parser/*.c ./test_ast_parser.c -o fla
+    gcc ../src/lexer/*.c ../src/ast/*.c ../src/parser/*.c ./unity.c ./test_ast_parser.c -o fla
     ./fla
     rm ./fla
 elif [ "$arg" = "symbol_table" ]; then
-    gcc ../src/semantic/symbol_table.c ./unity.c ./test_symbol_table.c -o fla
+    gcc ../src/symbol_table/symbol_table.c ./unity.c ./test_symbol_table.c -o fla
     ./fla
     rm ./fla
 fi

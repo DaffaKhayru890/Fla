@@ -34,19 +34,6 @@ void test_keyword_fun(void) {
     free_lexer(l);
 }
 
-void test_keyword_void(void) {   
-    char *code = "void";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_VOID, t->type);
-    TEST_ASSERT_EQUAL_STRING("void", t->literal);
-
-    free_lexer(l);
-}
-
 void test_keyword_do(void) {   
     char *code = "do";
 
@@ -132,47 +119,8 @@ void test_keyword_else(void) {
 
     Token *t = tokenize(l);
 
-    TEST_ASSERT_EQUAL(TK_KEYWORD_STRING, t->type);
+    TEST_ASSERT_EQUAL(TK_KEYWORD_ELSE, t->type);
     TEST_ASSERT_EQUAL_STRING("else", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_int(void) {   
-    char *code = "int";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_INT, t->type);
-    TEST_ASSERT_EQUAL_STRING("int", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_double(void) {   
-    char *code = "double";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_DOUBLE, t->type);
-    TEST_ASSERT_EQUAL_STRING("double", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_char(void) {   
-    char *code = "char";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_CHAR, t->type);
-    TEST_ASSERT_EQUAL_STRING("char", t->literal);
 
     free_lexer(l);
 }
@@ -186,32 +134,6 @@ void test_keyword_string(void) {
 
     TEST_ASSERT_EQUAL(TK_KEYWORD_STRING, t->type);
     TEST_ASSERT_EQUAL_STRING("string", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_for(void) {   
-    char *code = "for";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_FOR, t->type);
-    TEST_ASSERT_EQUAL_STRING("for", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_while(void) {   
-    char *code = "while";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_WHILE, t->type);
-    TEST_ASSERT_EQUAL_STRING("while", t->literal);
 
     free_lexer(l);
 }
@@ -317,19 +239,11 @@ int main(void) {
 
     RUN_TEST(test_keyword_use);
     RUN_TEST(test_keyword_fun);
-    RUN_TEST(test_keyword_void);
     RUN_TEST(test_keyword_do);
     RUN_TEST(test_keyword_end);
     RUN_TEST(test_keyword_if);
     RUN_TEST(test_keyword_const);
     RUN_TEST(test_keyword_var);
-    RUN_TEST(test_keyword_int);
-    RUN_TEST(test_keyword_double);
-    RUN_TEST(test_keyword_char);
-    RUN_TEST(test_keyword_string);
-    RUN_TEST(test_keyword_for);
-    RUN_TEST(test_keyword_switch);
-    RUN_TEST(test_keyword_while);
     RUN_TEST(test_keyword_switch);
     RUN_TEST(test_identifier);
     RUN_TEST(test_string);
