@@ -4,7 +4,7 @@
 
 #include "../../include/parser.h"
 
-Parser *init_parser(Lexer *l, Token *t) {
+Parser *init_parser(Lexer *l) {
     Parser *parser = (Parser*)malloc(sizeof(Parser));
 
     if(parser == NULL) {
@@ -12,18 +12,18 @@ Parser *init_parser(Lexer *l, Token *t) {
         exit(EXIT_FAILURE);
     }
 
-    printf("%s", t->literal);
-
     parser->lexer = l;
-    parser->current = tokenize(l,t);
-
-    printf("%s", parser->current->literal);
+    parser->current = tokenize(l);
 
     return parser;
 }
 
 void free_parser(Parser *p) {
     if(p != NULL) {
+        if(p->current != NULL) {
+            free(p->current);
+        }
+        
         free(p);
     }
 
@@ -49,12 +49,12 @@ char *token_names[] = {
     "TK_EOF"
 };
 
-void eat_token(Parser *p, TokenType type, Lexer *l, Token *t) {
+void eat_token(Parser *p, TokenType type, Lexer *l) {
     if(p->current->type == type) {
         free(p->current);
-        p->current = tokenize(l, t);
+        p->current = tokenize(l);
     }else {
-        fprintf(stderr, "Error: parse failed, expected type%s, but get %s\n", token_names[p->current->type], token_names[p->current->type]);
+        fprintf(stderr, "Error: parse failed, expected type %s, but get %s\n", token_names[type], token_names[p->current->type]);
         exit(EXIT_FAILURE);
     }
 }

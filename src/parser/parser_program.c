@@ -4,15 +4,11 @@
 
 #include "../../include/parser.h"
 
-ASTNode *parser_program(Parser *p, Lexer *l, Token *t) {
+ASTNode *parser_program(Parser *p, Lexer *l) {
     ASTNode *program = create_program_node();
 
-    printf("%s\n", p->current->literal);
-
-    while(p->current->type != TK_EOF) {
-        ASTNode *parse_module = parser_module(p, l, t);
-        add_child_to_parent_children(program, parse_module);
-    }
+    ASTNode *parse_module = parser_module(p, l);
+    add_child_to_parent_children(program, parse_module);
     
     return program;
 }

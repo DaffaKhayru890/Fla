@@ -4,33 +4,31 @@
 
 #include "../../include/parser.h"
 
-ASTNode *parser_function_declaration(Parser *p, Lexer *l, Token *t) {
-    printf("identifier function decl: %s\n", t->literal);
-    
-    // fun keyword
-    eat_token(p, TK_KEYWORD_FUN, l, t);
+ASTNode *parser_function_declaration(Parser *p, Lexer *l) {
+    eat_token(p, TK_KEYWORD_FUN, l);
     
     char function_name[256]; 
     strcpy(function_name, p->current->literal);
+
+    eat_token(p, TK_IDENTIFIER, l);
     
-    ASTNode *function_declaration = create_function_declaration_node(function_name, p->peek->literal);
+    // Expect: ( ) ->
+    eat_token(p, TK_LPAREN, l);
+    eat_token(p, TK_RPAREN, l);
+    eat_token(p, TK_RARROW, l);
 
-    // function identifier or name
-    eat_token(p, TK_IDENTIFIER, l, t);
-
-    // ( lparen
-    eat_token(p, TK_LPAREN, l, t);
+    char return_type[256]; 
+    strcpy(return_type, p->current->literal);
     
-    // ) rparen
-    eat_token(p, TK_RPAREN, l, t);
+    ASTNode *function_declaration = create_function_declaration_node(function_name, p->current->literal);;
 
-    // -> rarrow
-    eat_token(p, TK_RARROW, l, t);
+    if(strcmp(p->current->literal, "void") == 0) {
+        eat_token(p, TK_KEYWORD_VOID, l);
+    }
 
-    // current node is do
     switch(p->current->type) {
         case TK_KEYWORD_DO:
-            ASTNode *block = parser_block(p, l, t);
+            ASTNode *block = parser_block(p, l);
             add_child_to_parent_children(function_declaration, block);
         break;
     }

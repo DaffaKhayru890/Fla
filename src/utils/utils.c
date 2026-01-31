@@ -10,7 +10,7 @@ char *read_file(char *path) {
         perror("Error open file");
     }
 
-    fseek(file, 10, SEEK_END);
+    fseek(file, 0, SEEK_END);
     long size_code = ftell(file);
     rewind(file);
 

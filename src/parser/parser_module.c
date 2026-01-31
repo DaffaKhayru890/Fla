@@ -4,14 +4,12 @@
 
 #include "../../include/parser.h"
 
-ASTNode *parser_module(Parser *p, Lexer *l, Token *t) {
+ASTNode *parser_module(Parser *p, Lexer *l) {
     ASTNode *module = create_module_node("main");
-
-    printf("identifier function decl: %s\n", t->literal);
 
     switch(p->current->type) {
         case TK_KEYWORD_FUN:
-            ASTNode *function_declaration = parser_function_declaration(p, l, t);
+            ASTNode *function_declaration = parser_function_declaration(p, l);
             add_child_to_parent_children(module, function_declaration);
         break;
     }

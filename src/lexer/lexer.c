@@ -23,20 +23,6 @@ Lexer *init_lexer(char *input) {
     return lexer;
 }
 
-Token *init_token(void) {
-    Token *token = (Token *)malloc(sizeof(Token));
-
-    if(token == NULL) {
-        fprintf(stderr, "Error: can not init token\n");
-        exit(EXIT_FAILURE);
-    };
-
-    token->literal[0] = '\0';
-    token->type = TK_EMPTY;
-
-    return token;
-}
-
 void advanced(Lexer *l) {
     if(l->ch != '\0') {
         l->pos++;
@@ -104,6 +90,54 @@ Token *read_keyword(Lexer *l, Token *t) {
         t->type = TK_KEYWORD_END;
 
         return t;
+    }else if(strcmp(t->literal, "var") == 0) {
+        t->type = TK_KEYWORD_VAR;
+
+        return t;
+    }else if(strcmp(t->literal, "double") == 0) {
+        t->type = TK_KEYWORD_DOUBLE;
+
+        return t;
+    }else if(strcmp(t->literal, "char") == 0) {
+        t->type = TK_KEYWORD_CHAR;
+
+        return t;
+    }else if(strcmp(t->literal, "string") == 0) {
+        t->type = TK_KEYWORD_STRING;
+
+        return t;
+    }else if(strcmp(t->literal, "int") == 0) {
+        t->type = TK_KEYWORD_INT;
+
+        return t;
+    }else if(strcmp(t->literal, "if") == 0) {
+        t->type = TK_KEYWORD_IF;
+
+        return t;
+    }else if(strcmp(t->literal, "else") == 0) {
+        t->type = TK_KEYWORD_ELSE;
+
+        return t;
+    }else if(strcmp(t->literal, "switch") == 0) {
+        t->type = TK_KEYWORD_SWITCH;
+
+        return t;
+    }else if(strcmp(t->literal, "const") == 0) {
+        t->type = TK_KEYWORD_CONST;
+
+        return t;
+    }else if(strcmp(t->literal, "while") == 0) {
+        t->type = TK_KEYWORD_WHILE;
+
+        return t;
+    }else if(strcmp(t->literal, "for") == 0) {
+        t->type = TK_KEYWORD_FOR;
+
+        return t;
+    }else if(strcmp(t->literal, "use") == 0) {
+        t->type = TK_KEYWORD_USE;
+
+        return t;
     }else {
         t->type = TK_IDENTIFIER;
 
@@ -150,8 +184,12 @@ Token *read_digit(Lexer *l, Token *t) {
     return t;
 }
 
-Token *read_rarrow(Lexer *l, Token *t) {
-    if(l->ch == '-' && l->input[l->pos+1] == '>') {
+Token *tokenize(Lexer *l) {
+    Token *t = (Token *)malloc(sizeof(Token));
+
+    skip_whitespace(l);
+
+    if(l->ch == '-' && l->input[l->pos+1] == '>' && l->input[l->pos+1] != '\0') {
         t->literal[0] = '-';
         t->literal[1] = '>';
         t->literal[2] = '\0';
@@ -164,15 +202,83 @@ Token *read_rarrow(Lexer *l, Token *t) {
         return t;
     }
 
-    return t;
-}
+    if(l->ch == '=' && l->input[l->pos+1] == '=' && l->input[l->pos+1] != '\0') {
+        t->literal[0] = '=';
+        t->literal[1] = '=';
+        t->literal[2] = '\0';
 
-Token *tokenize(Lexer *l, Token *t) {
-    TokenType token_type;
+        t->type = TK_EQUAL;
 
-    skip_whitespace(l);
+        advanced(l);
+        advanced(l);
 
-    if(l->ch == '-' && l->input[l->pos+1] == '>' && l->input[l->pos+1] != '\0') return read_rarrow(l, t);
+        return t;
+    }
+
+    if(l->ch == '!' && l->input[l->pos+1] == '=' && l->input[l->pos+1] != '\0') {
+        t->literal[0] = '!';
+        t->literal[1] = '=';
+        t->literal[2] = '\0';
+
+        t->type = TK_NOT_EQUAL;
+
+        advanced(l);
+        advanced(l);
+
+        return t;
+    }
+
+    if(l->ch == '<' && l->input[l->pos+1] == '=' && l->input[l->pos+1] != '\0') {
+        t->literal[0] = '<';
+        t->literal[1] = '=';
+        t->literal[2] = '\0';
+
+        t->type = TK_LESS_THAN_EQUAL;
+
+        advanced(l);
+        advanced(l);
+
+        return t;
+    }
+
+    if(l->ch == '>' && l->input[l->pos+1] == '=' && l->input[l->pos+1] != '\0') {
+        t->literal[0] = '<';
+        t->literal[1] = '=';
+        t->literal[2] = '\0';
+
+        t->type = TK_GREATER_THAN_EQUAL;
+
+        advanced(l);
+        advanced(l);
+
+        return t;
+    }
+
+    if(l->ch == '|' && l->input[l->pos+1] == '|' && l->input[l->pos+1] != '\0') {
+        t->literal[0] = '|';
+        t->literal[1] = '|';
+        t->literal[2] = '\0';
+
+        t->type = TK_OR;
+
+        advanced(l);
+        advanced(l);
+
+        return t;
+    }
+
+    if(l->ch == '&' && l->input[l->pos+1] == '&' && l->input[l->pos+1] != '\0') {
+        t->literal[0] = '<';
+        t->literal[1] = '=';
+        t->literal[2] = '\0';
+
+        t->type = TK_AND;
+
+        advanced(l);
+        advanced(l);
+
+        return t;
+    }
 
     if(isalpha(l->ch)) {
         return read_keyword(l, t);
@@ -207,6 +313,54 @@ Token *tokenize(Lexer *l, Token *t) {
 
         case '=':
             create_token(l , t, TK_ASSIGN, "=");
+
+            return t;
+        break;
+
+        case '+':
+            create_token(l , t, TK_PLUS, "+");
+
+            return t;
+        break;
+
+        case '-':
+            create_token(l , t, TK_MINUS, "-");
+
+            return t;
+        break;
+
+        case '*':
+            create_token(l , t, TK_MULTIPLY, "*");
+
+            return t;
+        break;
+
+        case '/':
+            create_token(l , t, TK_DIVISION, "/");
+
+            return t;
+        break;
+
+        case '%':
+            create_token(l , t, TK_MODULO, "/");
+
+            return t;
+        break;
+
+        case '<':
+            create_token(l , t, TK_LESS_THAN, "<");
+
+            return t;
+        break;
+
+        case '>':
+            create_token(l , t, TK_GREATER_THAN, ">");
+
+            return t;
+        break;
+
+        case '^':
+            create_token(l , t, TK_EXPONENT, "^");
 
             return t;
         break;

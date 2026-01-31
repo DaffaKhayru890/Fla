@@ -18,6 +18,18 @@ ASTNode *create_program_node(void) {
     return root_node;
 };
 
+void add_child_to_parent_child(ASTNode *parent_node, ASTNode *child) {
+    ASTNode *new_child = (ASTNode*)malloc(sizeof(ASTNode*));
+
+    if(new_child == NULL) {
+        fprintf(stderr, "Error: can not malloc memory for new child\n");
+        exit(EXIT_FAILURE);
+    }
+
+    new_child = child;
+    parent_node->child = new_child;
+}
+
 void add_child_to_parent_children(ASTNode *parent_node, ASTNode *child) {
     ASTNode **new_children = (ASTNode**)realloc(
         parent_node->children,
@@ -25,7 +37,7 @@ void add_child_to_parent_children(ASTNode *parent_node, ASTNode *child) {
     );
 
     if(new_children == NULL) {
-        fprintf(stderr, "Error: can not reallocate memory for new child\n");
+        fprintf(stderr, "Error: can not reallocate memory for new children\n");
         exit(EXIT_FAILURE);
     }
 

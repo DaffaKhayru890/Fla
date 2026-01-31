@@ -4,7 +4,7 @@
 
 #include "../../include/parser.h"
 
-ASTNode *parser_function_call(Parser *p, Lexer *l, Token *t) {
+ASTNode *parser_function_call(Parser *p, Lexer *l) {
     char function_call_identifier[256];
     strcpy(function_call_identifier, p->current->literal); 
 
@@ -12,12 +12,14 @@ ASTNode *parser_function_call(Parser *p, Lexer *l, Token *t) {
 
     switch(p->current->type) {
         case TK_IDENTIFIER:
-            // identifier 
-            eat_token(p, TK_IDENTIFIER, l, t);
-            eat_token(p, TK_LPAREN, l, t);
+            eat_token(p, TK_IDENTIFIER, l);
+            eat_token(p, TK_LPAREN, l);
 
-            ASTNode *argument = parser_argument(p, l, t);
+            ASTNode *argument = parser_argument(p, l);
             add_child_to_parent_children(function_call, argument);
+
+            eat_token(p, TK_RPAREN, l);
+            // eat_token(p, TK_KEYWORD_END, l, t);
         break;
     }
 
