@@ -3,7 +3,7 @@
 #include "stdlib.h"
 #include "string.h"
 
-ASTNode *create_binary_expression_node(char *operator) {
+ASTNode *create_binary_node(char *operator) {
     ASTNode *binary_expression = create_node(NODE_EXPRESSION);
 
     binary_expression->expression.expression_kind = EXPRESSION_BINARY;
