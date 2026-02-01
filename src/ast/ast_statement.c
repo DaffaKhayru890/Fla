@@ -26,12 +26,14 @@ ASTNode *create_block_node() {
     return block;
 }
 
-ASTNode *create_variable_declaration_node(char *name) {
+ASTNode *create_variable_declaration_node(char *name, char *type) {
     ASTNode *variable_declaration = create_node(NODE_STATEMENT);
 
     variable_declaration->statement.statement_kind = STATEMENT_VARIABLE_DECLARATION;
-    variable_declaration->child = NULL;
+    variable_declaration->children = NULL;
+    variable_declaration->child_count = 0;
     variable_declaration->statement.VariableDeclaration.name = strdup(name);
+    variable_declaration->statement.VariableDeclaration.return_type = strdup(type);
 
     return variable_declaration;
 }

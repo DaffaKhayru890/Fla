@@ -59,7 +59,8 @@ ASTNode *create_unary_node(UnaryOperator unary_operator, bool is_postfix) {
      ASTNode *unary = create_node(NODE_EXPRESSION);
 
     unary->expression.Unary.operator = unary_operator;
-    unary->child = NULL;
+    unary->children = NULL;
+    unary->child_count = 0;
     unary->expression.Unary.is_postfix = is_postfix;
 
     return unary;
@@ -73,4 +74,15 @@ ASTNode *create_assignment_node(AssignOperator assignment_operator) {
     assignment->child_count = 0;
 
     return assignment;
+}
+
+ASTNode *create_paremeter_node(char *param_name, char *param_type) {
+    ASTNode *parameter = create_node(NODE_EXPRESSION);
+
+    parameter->expression.Parameter.name = strdup(param_name);
+    parameter->expression.Parameter.type = strdup(param_type);
+    parameter->children = NULL;
+    parameter->child_count = 0;
+
+    return parameter;
 }

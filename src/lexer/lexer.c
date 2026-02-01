@@ -122,6 +122,34 @@ Token *read_keyword(Lexer *l, Token *t) {
         t->type = TK_KEYWORD_RETURN;
 
         return t;
+    }else if(strcmp(t->literal, "int") == 0) {
+        t->type = TK_KEYWORD_INT;
+
+        return t;
+    }else if(strcmp(t->literal, "double") == 0) {
+        t->type = TK_KEYWORD_DOUBLE;
+
+        return t;
+    }else if(strcmp(t->literal, "char") == 0) {
+        t->type = TK_KEYWORD_CHAR;
+
+        return t;
+    }else if(strcmp(t->literal, "boolean") == 0) {
+        t->type = TK_KEYWORD_BOOLEAN;
+
+        return t;
+    }else if(strcmp(t->literal, "string") == 0) {
+        t->type = TK_KEYWORD_STRING;
+
+        return t;
+    }else if(strcmp(t->literal, "true") == 0) {
+        t->type = TK_KEYWORD_TRUE;
+
+        return t;
+    }else if(strcmp(t->literal, "false") == 0) {
+        t->type = TK_KEYWORD_FALSE;
+
+        return t;
     }else {
         t->type = TK_IDENTIFIER;
 
@@ -151,8 +179,31 @@ Token *read_string(Lexer *l, Token *t) {
     return t;
 }
 
+Token *read_char(Lexer *l, Token *t) {
+    if(l->ch != '\'') return NULL;
+    
+    int pos = 0;
+
+    advanced(l);
+
+    while(l->ch != '\'' && l->ch != '\0' && (pos < MAX_LITERAL-1)) {
+        t->literal[pos] = l->ch;
+        advanced(l);
+
+        pos++;
+    }
+
+    if(l->ch == '\'') advanced(l);
+
+    t->literal[pos] = '\0';
+    t->type = TK_CHAR;
+
+    return t;
+}
+
 Token *read_digit(Lexer *l, Token *t) {
     int pos = 0;
+    bool has_dot = false;
     
     while(isdigit(l->ch) && (pos < MAX_LITERAL-1)) {
         t->literal[pos] = l->ch;
@@ -161,11 +212,48 @@ Token *read_digit(Lexer *l, Token *t) {
         pos++;
     }
 
+    if(l->ch == '.' && isdigit(l->input[l->pos+1])) {
+        has_dot = true;
+
+        t->literal[pos] = l->ch;
+        advanced(l);
+        pos++;
+
+        while(isdigit(l->ch) && (pos < MAX_LITERAL-1)) {
+            t->literal[pos] = l->ch;
+            advanced(l);
+            pos++;
+        }
+    }
+
     t->literal[pos] = '\0';
 
-    t->type = TK_NUMBER;
+    if(has_dot) {
+        t->type = TK_DOUBLE;
+    }else {
+        t->type = TK_NUMBER;
+    }
 
     return t;
+}
+
+Token *read_two_char_token(Lexer *l, Token *t, TokenType token_type, char first, char second) {
+    if(l == NULL || t == NULL) return NULL;
+    
+    if(l->ch == first && l->input[l->pos+1] == second && l->input[l->pos+1] != '\0') {
+        t->literal[0] = first;
+        t->literal[1] = second;
+        t->literal[2] = '\0';
+
+        t->type = token_type;
+
+        advanced(l);
+        advanced(l);
+
+        return t;
+    }
+
+    return NULL;
 }
 
 Token *tokenize(Lexer *l) {
@@ -173,96 +261,27 @@ Token *tokenize(Lexer *l) {
 
     skip_whitespace(l);
 
-    if(l->ch == '-' && l->input[l->pos+1] == '>' && l->input[l->pos+1] != '\0') {
-        t->literal[0] = '-';
-        t->literal[1] = '>';
-        t->literal[2] = '\0';
+    Token *result;
 
-        t->type = TK_RARROW;
+    if((result = read_two_char_token(l, t, TK_EQUAL, '=', '=')) != NULL) return result;
+    if((result = read_two_char_token(l, t, TK_NOT_EQUAL, '!', '=')) != NULL) return result;
+    if((result = read_two_char_token(l, t, TK_LESS_THAN_EQUAL, '<', '=')) != NULL) return result;
+    if((result = read_two_char_token(l, t, TK_GREATER_THAN_EQUAL, '>', '=')) != NULL) return result;
 
-        advanced(l);
-        advanced(l);
+    if((result = read_two_char_token(l, t, TK_ASSIGN_PLUS, '+', '=')) != NULL) return result;
+    if((result = read_two_char_token(l, t, TK_ASSIGN_MINUS, '-', '=')) != NULL) return result;
+    if((result = read_two_char_token(l, t, TK_ASSIGN_MULTIPLY, '*', '=')) != NULL) return result;
+    if((result = read_two_char_token(l, t, TK_ASSIGN_DIVISION, '/', '=')) != NULL) return result;
+    if((result = read_two_char_token(l, t, TK_ASSIGN_MODULO, '%', '=')) != NULL) return result;
 
-        return t;
-    }
+    if((result = read_two_char_token(l, t, TK_BITWISE_AND, '&', '&')) != NULL) return result;
+    if((result = read_two_char_token(l, t, TK_BITWISE_OR, '|', '=')) != NULL) return result;
+    if((result = read_two_char_token(l, t, TK_BITWISE_XOR, '^', '=')) != NULL) return result;
 
-    if(l->ch == '=' && l->input[l->pos+1] == '=' && l->input[l->pos+1] != '\0') {
-        t->literal[0] = '=';
-        t->literal[1] = '=';
-        t->literal[2] = '\0';
+    if((result = read_two_char_token(l, t, TK_INCREMENT, '+', '+')) != NULL) return result;
+    if((result = read_two_char_token(l, t, TK_DECREMENT, '-', '-')) != NULL) return result;
 
-        t->type = TK_EQUAL;
-
-        advanced(l);
-        advanced(l);
-
-        return t;
-    }
-
-    if(l->ch == '!' && l->input[l->pos+1] == '=' && l->input[l->pos+1] != '\0') {
-        t->literal[0] = '!';
-        t->literal[1] = '=';
-        t->literal[2] = '\0';
-
-        t->type = TK_NOT_EQUAL;
-
-        advanced(l);
-        advanced(l);
-
-        return t;
-    }
-
-    if(l->ch == '<' && l->input[l->pos+1] == '=' && l->input[l->pos+1] != '\0') {
-        t->literal[0] = '<';
-        t->literal[1] = '=';
-        t->literal[2] = '\0';
-
-        t->type = TK_LESS_THAN_EQUAL;
-
-        advanced(l);
-        advanced(l);
-
-        return t;
-    }
-
-    if(l->ch == '>' && l->input[l->pos+1] == '=' && l->input[l->pos+1] != '\0') {
-        t->literal[0] = '<';
-        t->literal[1] = '=';
-        t->literal[2] = '\0';
-
-        t->type = TK_GREATER_THAN_EQUAL;
-
-        advanced(l);
-        advanced(l);
-
-        return t;
-    }
-
-    if(l->ch == '|' && l->input[l->pos+1] == '|' && l->input[l->pos+1] != '\0') {
-        t->literal[0] = '|';
-        t->literal[1] = '|';
-        t->literal[2] = '\0';
-
-        t->type = TK_OR;
-
-        advanced(l);
-        advanced(l);
-
-        return t;
-    }
-
-    if(l->ch == '&' && l->input[l->pos+1] == '&' && l->input[l->pos+1] != '\0') {
-        t->literal[0] = '<';
-        t->literal[1] = '=';
-        t->literal[2] = '\0';
-
-        t->type = TK_AND;
-
-        advanced(l);
-        advanced(l);
-
-        return t;
-    }
+    if((result = read_two_char_token(l, t, TK_RARROW, '-', '>')) != NULL) return result;
 
     if(isalpha(l->ch)) {
         return read_keyword(l, t);
@@ -270,6 +289,10 @@ Token *tokenize(Lexer *l) {
 
     if(l->ch == '"') {
         return read_string(l, t);
+    }
+
+    if(l->ch == '\'') {
+        return read_char(l, t);
     }
 
     if(isdigit(l->ch)) {
@@ -326,7 +349,7 @@ Token *tokenize(Lexer *l) {
         break;
 
         case '%':
-            create_token(l , t, TK_MODULO, "/");
+            create_token(l , t, TK_MODULO, "%");
 
             return t;
         break;
@@ -345,6 +368,30 @@ Token *tokenize(Lexer *l) {
 
         case '^':
             create_token(l , t, TK_EXPONENT, "^");
+
+            return t;
+        break;
+
+        case '[':
+            create_token(l , t, TK_LSQUARE, "[");
+
+            return t;
+        break;
+
+        case ']':
+            create_token(l , t, TK_RSQUARE, "]");
+
+            return t;
+        break;
+
+        case ',':
+            create_token(l , t, TK_COMMA, ",");
+
+            return t;
+        break;
+
+        case '?':
+            create_token(l , t, TK_TERNARY_OPERATOR, "?");
 
             return t;
         break;

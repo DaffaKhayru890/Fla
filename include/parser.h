@@ -26,3 +26,10 @@ ASTNode *parser_if(Parser *p, Lexer *l);
 ASTNode *parser_while(Parser *p, Lexer *l);
 ASTNode *parser_for(Parser *p, Lexer *l);
 ASTNode *parser_switch(Parser *p, Lexer *l);
+
+ASTNode *parser_binary(Parser *p, Lexer *l);
+ASTNode *parser_function_call(Parser *p, Lexer *l);
+ASTNode *parser_literal(Parser *p, Lexer *l);
+ASTNode *parser_unary(Parser *p, Lexer *l);
+ASTNode *parser_assignment(Parser *p, Lexer *l);
+ASTNode *parser_paremeter(Parser *p, Lexer *l);

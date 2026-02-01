@@ -25,13 +25,13 @@ typedef enum {
 }LiteralKind;
 
 typedef enum {
-    UNARY_NEGATE,      // -
-    UNARY_NOT,         // !
+    // UNARY_NEGATE,      // -
+    // UNARY_NOT,         // !
     UNARY_PRE_INCREMENT,     // ++x
     UNARY_POST_INCREMENT,    // x++
     UNARY_PRE_DECREMENT,     // --x
     UNARY_POST_DECREMENT,    // x--
-    UNARY_BITWISE_NOT, // ~
+    // UNARY_BITWISE_NOT, // ~
     // UNARY_ADDRESS_OF,  // &
     // UNARY_DEREFERENCE, // *
 }UnaryOperator;
@@ -62,6 +62,14 @@ typedef enum {
     STATEMENT_EXPRESSION,
 }StatementKind;
 
+typedef enum {
+    RETURN_STRING,
+    RETURN_INT,
+    RETURN_CHAR,
+    RETURN_DOUBLE,
+    RETURN_BOOLEAN,
+}ReturnType;
+
 typedef struct {
     ExpressionKind expression_kind;
     union {
@@ -85,6 +93,13 @@ typedef struct {
             AssignOperator operator;
             // children left, righ
         }Assignment;
+
+        struct {
+            int parameter_count;
+            char *name;
+            char *type;
+            // children parameter
+        }Parameter;
 
         struct {
             LiteralKind literal_kind;
@@ -115,8 +130,13 @@ typedef struct {
 
         struct {
             char *name;
+            char *type;
             // child initializer
         }VariableDeclaration;
+
+        struct {
+            ReturnType return_type;
+        }Return;
 
         struct {
             int elseif_count;
@@ -146,7 +166,6 @@ struct ASTNode {
     NodeType type;
     
     ASTNode **children;
-    ASTNode *child;
 
     int child_count;
 
@@ -162,8 +181,9 @@ ASTNode *create_program_node();
 ASTNode *create_module_node(char *name);
 
 ASTNode *create_function_declaration_node(char *name, char *return_type);
+ASTNode *create_return_node(char *name, char *return_type);
 ASTNode *create_block_node();
-ASTNode *create_variable_declaration_node(char *name);
+ASTNode *create_variable_declaration_node(char *name, char *type);
 ASTNode *create_if_node(int else_count);
 ASTNode *create_while_node();
 ASTNode *create_for_node();
@@ -174,8 +194,8 @@ ASTNode *create_function_call_node(int argument_count);
 ASTNode *create_literal_node(LiteralKind literal_kind, int int_value, double double_value, char char_value, char *string_value, bool bool_value);
 ASTNode *create_unary_node(UnaryOperator unary_operator ,bool is_postfix);
 ASTNode *create_assignment_node(AssignOperator assign_operator);
+ASTNode *create_paremeter_node(char *param_name, char *param_type);
 
-void add_child_to_parent_child(ASTNode *parent, ASTNode* child);
 void add_child_to_parent_children(ASTNode *parent, ASTNode* child);
 
 void free_node(ASTNode *node);

@@ -8,134 +8,42 @@
 void setUp(void) {}
 void tearDown(void) {}
 
-void test_keyword_use(void) {   
-    char *code = "use";
+void test_keyword() {
+    struct {
+        char *input;
+        TokenType type;
+    } keywords[] = {
+        {"use", TK_KEYWORD_USE},
+        {"fun", TK_KEYWORD_FUN},
+        {"do", TK_KEYWORD_DO},
+        {"end", TK_KEYWORD_END},
+        {"do", TK_KEYWORD_DO},
+        {"if", TK_KEYWORD_IF},
+        {"else", TK_KEYWORD_ELSE},
+        {"while", TK_KEYWORD_WHILE},
+        {"for", TK_KEYWORD_FOR},
+        {"switch", TK_KEYWORD_SWITCH},
+        {"int", TK_KEYWORD_INT},
+        {"double", TK_KEYWORD_DOUBLE},
+        {"char", TK_KEYWORD_CHAR},
+        {"boolean", TK_KEYWORD_BOOLEAN},
+        {"string", TK_KEYWORD_STRING},
+        {"true", TK_KEYWORD_TRUE},
+        {"false", TK_KEYWORD_FALSE},
+    };
+    
+    int size_mark = sizeof(keywords)/sizeof(keywords[0]);
 
-    Lexer *l = init_lexer(code);
+    for(int i = 0; i < size_mark; i++) {
+        Lexer *l = init_lexer(keywords[i].input);
 
-    Token *t = tokenize(l);
+        Token *t = tokenize(l);
+        TEST_ASSERT_EQUAL_STRING(keywords[i].input, t->literal);
+        TEST_ASSERT_EQUAL(keywords[i].type, t->type);
 
-    TEST_ASSERT_EQUAL(TK_KEYWORD_USE, t->type);
-    TEST_ASSERT_EQUAL_STRING("use", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_fun(void) {   
-    char *code = "fun";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_FUN, t->type);
-    TEST_ASSERT_EQUAL_STRING("fun", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_do(void) {   
-    char *code = "do";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_DO, t->type);
-    TEST_ASSERT_EQUAL_STRING("do", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_end(void) {   
-    char *code = "end";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_END, t->type);
-    TEST_ASSERT_EQUAL_STRING("end", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_var(void) {   
-    char *code = "var";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_VAR, t->type);
-    TEST_ASSERT_EQUAL_STRING("var", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_const(void) {   
-    char *code = "const";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_CONST, t->type);
-    TEST_ASSERT_EQUAL_STRING("const", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_if(void) {   
-    char *code = "if";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_IF, t->type);
-    TEST_ASSERT_EQUAL_STRING("if", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_switch(void) {   
-    char *code = "switch";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_SWITCH, t->type);
-    TEST_ASSERT_EQUAL_STRING("switch", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_else(void) {   
-    char *code = "else";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_ELSE, t->type);
-    TEST_ASSERT_EQUAL_STRING("else", t->literal);
-
-    free_lexer(l);
-}
-
-void test_keyword_string(void) {   
-    char *code = "string";
-
-    Lexer *l = init_lexer(code);
-
-    Token *t = tokenize(l);
-
-    TEST_ASSERT_EQUAL(TK_KEYWORD_STRING, t->type);
-    TEST_ASSERT_EQUAL_STRING("string", t->literal);
-
-    free_lexer(l);
+        free_token(t);
+        free_lexer(l);
+    }
 }
 
 void test_identifier(void) {   
@@ -155,7 +63,7 @@ void test_identifier(void) {
     TEST_ASSERT_EQUAL_STRING("nama_saya", t2->literal);
 
     free_lexer(l);
-}
+} 
 
 void test_string(void) {
     char *source = "\"hello\"";
@@ -170,82 +78,81 @@ void test_string(void) {
     free_lexer(l);
 }
 
+void test_number(void) {
+    struct {
+        char *input;
+        TokenType type;
+    } test_case[] = {
+        {"1", TK_NUMBER},
+        {"123", TK_NUMBER},
+        {"3.14", TK_DOUBLE},
+    };
+
+    int size_test_case = sizeof(test_case)/sizeof(test_case[0]);
+
+    for(int i = 0; i < size_test_case; i++) {
+        Lexer *l = init_lexer(test_case[i].input);
+
+        Token *t = tokenize(l);
+        TEST_ASSERT_EQUAL(test_case[i].type, t->type);
+        TEST_ASSERT_EQUAL_STRING(test_case[i].input, t->literal);
+
+        free_token(t);
+        free_lexer(l);
+    }
+}
+
 void test_operators(void) {
-    char *source = "( ) -> : = + - * / % == != < > <= >= || && ^";
-    Lexer *l = init_lexer(source);
+    struct {
+        char *input;
+        TokenType type;
+    } operators[] = {
+        {"(", TK_LPAREN},
+        {")", TK_RPAREN},
+        {":", TK_COLON},
+        {"=", TK_ASSIGN},
+        {"+", TK_PLUS},
+        {"-", TK_MINUS},
+        {"*", TK_MULTIPLY},
+        {"/", TK_DIVISION},
+        {"%", TK_MODULO},
+        {",", TK_COMMA},
+        {"<", TK_LESS_THAN},
+        {">", TK_GREATER_THAN},
+        {"<=", TK_LESS_THAN_EQUAL},
+        {">=", TK_GREATER_THAN_EQUAL},
+        {"*=", TK_ASSIGN_MULTIPLY},
+        {"/=", TK_ASSIGN_DIVISION},
+        {"+=", TK_ASSIGN_PLUS},
+        {"-=", TK_ASSIGN_MINUS},
+        {"++", TK_INCREMENT},
+        {"--", TK_DECREMENT},
+        {"&&", TK_BITWISE_AND},
+        {"|=", TK_BITWISE_OR},
+        {"^=", TK_BITWISE_XOR},
+        {"->", TK_RARROW}
+    };
     
-    Token *t1 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_LPAREN, t1->type);
-    
-    Token *t2 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_RPAREN, t2->type);
-    
-    Token *t3 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_RARROW, t3->type);
-    
-    Token *t4 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_COLON, t4->type);
-    
-    Token *t5 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_ASSIGN, t5->type);
+    int size_mark = sizeof(operators)/sizeof(operators[0]);
 
-    Token *t6 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_PLUS, t6->type);
+    for(int i = 0; i < size_mark; i++) {
+        Lexer *l = init_lexer(operators[i].input);
 
-    Token *t7 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_MINUS, t7->type);
+        Token *t = tokenize(l);
+        TEST_ASSERT_EQUAL_STRING(operators[i].input, t->literal);
+        TEST_ASSERT_EQUAL(operators[i].type, t->type);
 
-    Token *t8 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_MULTIPLY, t8->type);
-
-    Token *t9 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_DIVISION, t9->type);
-
-    Token *t10 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_MODULO, t10->type);
-
-    Token *t11 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_EQUAL, t11->type);
-
-    Token *t12 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_NOT_EQUAL, t12->type);
-
-    Token *t13 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_LESS_THAN, t13->type);
-
-    Token *t14 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_GREATER_THAN, t14->type);
-
-    Token *t15 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_LESS_THAN_EQUAL, t15->type);
-
-    Token *t16 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_GREATER_THAN_EQUAL, t16->type);
-    
-    Token *t17 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_OR, t17->type);
-
-    Token *t18 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_AND, t18->type);
-
-    Token *t19 = tokenize(l);
-    TEST_ASSERT_EQUAL(TK_EXPONENT, t19->type);
-
-    free_lexer(l);
+        free_token(t);
+        free_lexer(l);
+    }
 }
 
 int main(void) {
     UNITY_BEGIN();
 
-    RUN_TEST(test_keyword_use);
-    RUN_TEST(test_keyword_fun);
-    RUN_TEST(test_keyword_do);
-    RUN_TEST(test_keyword_end);
-    RUN_TEST(test_keyword_if);
-    RUN_TEST(test_keyword_const);
-    RUN_TEST(test_keyword_var);
-    RUN_TEST(test_keyword_switch);
+    RUN_TEST(test_keyword);
     RUN_TEST(test_identifier);
+    RUN_TEST(test_number);
     RUN_TEST(test_string);
     RUN_TEST(test_operators);
 

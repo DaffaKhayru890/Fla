@@ -36,12 +36,6 @@ ASTNode *create_module_node(char *name) {
     return module;
 }
 
-void add_child_to_parent_child(ASTNode *parent, ASTNode* child) {
-    if(parent == NULL || child == NULL) return;
-
-    parent->child = child;
-}
-
 void add_child_to_parent_children(ASTNode *parent, ASTNode* child) {
     if(parent == NULL || child == NULL) return;
     
