@@ -1,7 +1,7 @@
 #ifndef FLA_LEXER_H
 #define FLA_LEXER_H
 
-#include "./tokens_type.h"
+#include "./types.h"
 
 #define MAX_LITERAL 256
 

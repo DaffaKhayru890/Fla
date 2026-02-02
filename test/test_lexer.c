@@ -87,7 +87,7 @@ void test_number(void) {
     } keywords[] = {
         {"1", TOK_INT},
         {"123", TOK_INT},
-        // {"3.14", TOK_DOUBLE},
+        {"3.14", TOK_DOUBLE},
     };
 
     int size_mark = sizeof(keywords)/sizeof(keywords[0]);
@@ -104,50 +104,53 @@ void test_number(void) {
     }
 }
 
-// void test_operators(void) {
-//     struct {
-//         char *input;
-//         TokenType type;
-//     } operators[] = {
-//         {"(", TK_LPAREN},
-//         {")", TK_RPAREN},
-//         {":", TK_COLON},
-//         {"=", TK_ASSIGN},
-//         {"+", TK_PLUS},
-//         {"-", TK_MINUS},
-//         {"*", TK_MULTIPLY},
-//         {"/", TK_DIVISION},
-//         {"%", TK_MODULO},
-//         {",", TK_COMMA},
-//         {"<", TK_LESS_THAN},
-//         {">", TK_GREATER_THAN},
-//         {"<=", TK_LESS_THAN_EQUAL},
-//         {">=", TK_GREATER_THAN_EQUAL},
-//         {"*=", TK_ASSIGN_MULTIPLY},
-//         {"/=", TK_ASSIGN_DIVISION},
-//         {"+=", TK_ASSIGN_PLUS},
-//         {"-=", TK_ASSIGN_MINUS},
-//         {"++", TK_INCREMENT},
-//         {"--", TK_DECREMENT},
-//         {"&&", TK_BITWISE_AND},
-//         {"|=", TK_BITWISE_OR},
-//         {"^=", TK_BITWISE_XOR},
-//         {"->", TK_RARROW}
-//     };
+void test_operators(void) {
+    struct {
+        char *input;
+        TokenType type;
+    } keywords[] = {
+        {"(", TOK_LPAREN},
+        {")", TOK_RPAREN},
+        {":", TOK_COLON},
+        {"=", TOK_ASSIGNMENT},
+        {"+", TOK_PLUS},
+        {"-", TOK_MINUS},
+        {"*", TOK_MULTIPLY},
+        {"/", TOK_DIVISION},
+        {"%", TOK_MODULO},
+        {",", TOK_COMMA},
+        {"<", TOK_OP_LT},
+        {">", TOK_OP_GT},
+        {"<=", TOK_OP_LTE},
+        {">=", TOK_OP_GTE},
+        {"*=", TOK_ASSIGN_MULTIPLY},
+        {"/=", TOK_ASSIGN_DIVISION},
+        {"+=", TOK_ASSIGN_PLUS},
+        {"-=", TOK_ASSIGN_MINUS},
+        {"++", TOK_INCREMENT},
+        {"--", TOK_DECREMENT},
+        {"&&", TOK_OP_AND},
+        {"||", TOK_OP_OR},
+        {"|=", TOK_ASSIGN_BITWISE_OR},
+        {"^=", TOK_ASSIGN_BITWISE_XOR},
+        {"->", TOK_RARROW},
+        {"<<=", TOK_ASSIGN_LEFT_SHIFT},
+        {">>=", TOK_ASSIGN_RIGHT_SHIFT},
+    };
     
-//     int size_mark = sizeof(operators)/sizeof(operators[0]);
+    int size_mark = sizeof(keywords)/sizeof(keywords[0]);
 
-//     for(int i = 0; i < size_mark; i++) {
-//         Lexer *l = init_lexer(operators[i].input);
+    for(int i = 0; i < size_mark; i++) {
+        Lexer lexer;
+        Token token;
 
-//         Token *t = tokenize(l);
-//         TEST_ASSERT_EQUAL_STRING(operators[i].input, t->literal);
-//         TEST_ASSERT_EQUAL(operators[i].type, t->type);
+        createLexer(&lexer, keywords[i].input);
 
-//         free_token(t);
-//         free_lexer(l);
-//     }
-// }
+        token = getNextToken(&lexer);
+        TEST_ASSERT_EQUAL_STRING(keywords[i].input, token.lexeme);
+        TEST_ASSERT_EQUAL(keywords[i].type, token.type);
+    }
+}
 
 int main(void) {
     UNITY_BEGIN();
@@ -156,7 +159,7 @@ int main(void) {
     RUN_TEST(test_identifier);
     RUN_TEST(test_number);
     // RUN_TEST(test_string);
-    // RUN_TEST(test_operators);
+    RUN_TEST(test_operators);
 
     printf("\n");
 

@@ -5,6 +5,8 @@ typedef enum {
     // base keyword
     TOK_KEY_USE,
     TOK_KEY_FUN,
+    TOK_KEY_VAR,
+    TOK_KEY_CONST,
     TOK_KEY_IF,
     TOK_KEY_ELSE,
     TOK_KEY_BREAK,
@@ -43,12 +45,34 @@ typedef enum {
     TOK_OP_LTE,
     TOK_OP_GT,
     TOK_OP_GTE,
+    TOK_OP_AND,
+    TOK_OP_OR,
 
     // single marks
     TOK_OP_UNARY,
     TOK_COMMA,
     TOK_SEMICOLON,
     TOK_COLON,
+    TOK_ASSIGNMENT,
+
+    // two chars
+    TOK_RARROW,
+
+    // assignment
+    TOK_ASSIGN_PLUS,
+    TOK_ASSIGN_MINUS,
+    TOK_ASSIGN_MULTIPLY,
+    TOK_ASSIGN_DIVISION,
+    TOK_ASSIGN_MODULO,
+    TOK_ASSIGN_BITWISE_AND,
+    TOK_ASSIGN_BITWISE_OR,
+    TOK_ASSIGN_BITWISE_XOR,
+    TOK_ASSIGN_LEFT_SHIFT,
+    TOK_ASSIGN_RIGHT_SHIFT,
+
+    // decremeent and increment
+    TOK_INCREMENT,
+    TOK_DECREMENT,
 
     // literal
     TOK_STRING,

@@ -18,13 +18,21 @@ static char peekNext(Lexer *l) {
     return l->input[l->pos+1];
 }
 
+static bool match(Lexer *l, char expect) {
+    return peek(l) == expect;
+}
+
+static bool matchNext(Lexer *l, char expect) {
+    return peekNext(l) == expect;
+}
+
 static void advanced(Lexer *l) {
     if(!isAtEnd(l)) {
         if(l->current == '\n') {
             l->line++;
             l->col = 0;
         }else {
-            l->col = 0;
+            l->col++;
         }
 
         l->pos++;
@@ -41,7 +49,10 @@ static void skipWhitespace(Lexer *l) {
 
 static void skipComment(Lexer *l) {
     if(peek(l) == '/' && peekNext(l) == '/') {
-        while(peek(l) != '\n') {
+        advanced(l);
+        advanced(l);
+
+        while(peek(l) != '\n' && !isAtEnd(l)) {
             advanced(l);
         }
     }
@@ -56,15 +67,36 @@ static Token createToken(Lexer *l, char *lexeme ,TokenType type) {
     return token;
 }
 
-static Token scanTwoChars(Lexer *l, char first, char second) {
+static Token createTwoChars(Lexer *l, char first, char second, TokenType type) {
     Token token;
     
-    if(peek(l) == first && peekNext(l) == second && peekNext != '\0') {
+    if(peek(l) == first && peekNext(l) == second && peekNext(l) != '\0') {
         token.lexeme[0] = first;
         token.lexeme[1] = second;
+        token.lexeme[2] = '\0';
 
-        
+        token.type = type;
 
+        advanced(l);
+        advanced(l);
+    }
+
+    return token;
+}
+
+static Token createThreeChars(Lexer *l, char first, char second, char third ,TokenType type) {
+    Token token;
+    
+    if(peek(l) == first && peekNext(l) == second && l->input[l->pos+2] == third && l->input[l->pos+2] != '\0') {
+        token.lexeme[0] = first;
+        token.lexeme[1] = second;
+        token.lexeme[2] = third;
+        token.lexeme[3] = '\0';
+
+        token.type = type;
+
+        advanced(l);
+        advanced(l);
         advanced(l);
     }
 
@@ -97,6 +129,8 @@ static Token scanKeyword(Lexer *l) {
 
     if(strcmp(token.lexeme, "use") == 0) return createToken(l, "use", TOK_KEY_USE);
     if(strcmp(token.lexeme, "fun") == 0) return createToken(l, "fun", TOK_KEY_FUN);
+    if(strcmp(token.lexeme, "var") == 0) return createToken(l, "var", TOK_KEY_VAR);
+    if(strcmp(token.lexeme, "const") == 0) return createToken(l, "const", TOK_KEY_CONST);
     if(strcmp(token.lexeme, "if") == 0) return createToken(l, "if", TOK_KEY_IF);
     if(strcmp(token.lexeme, "else") == 0) return createToken(l, "else", TOK_KEY_ELSE);
     if(strcmp(token.lexeme, "break") == 0) return createToken(l, "break", TOK_KEY_BREAK);
@@ -129,6 +163,7 @@ static Token scanDigit(Lexer *l) {
 
     Token token;
 
+    bool isFloat = false;
     int posLexeme = 0;
 
     while(isdigit(peek(l)) && posLexeme < MAX_LITERAL - 1) {
@@ -139,9 +174,21 @@ static Token scanDigit(Lexer *l) {
         posLexeme++;
     }
 
+    if(peek(l) == '.' && isdigit(peekNext(l))) {
+        isFloat = true;
+        token.lexeme[posLexeme++] = '.';
+        advanced(l);
+
+        while(isdigit(peek(l))) {
+            token.lexeme[posLexeme++] = peek(l);
+            advanced(l);
+        }
+        
+    }
+
     token.lexeme[posLexeme] = '\0';
 
-    token.type = TOK_INT;
+    token.type = isFloat ? TOK_DOUBLE : TOK_INT;
     
     return token;
 }
@@ -165,8 +212,32 @@ Token getNextToken(Lexer *l) {
         return token;
     }
 
+    Token token;
+
     skipWhitespace(l);
     skipComment(l);
+ 
+    if(match(l, '<') && matchNext(l, '<') && (l->input[l->pos+2] == '=')) 
+        return createThreeChars(l, '<', '<', '=', TOK_ASSIGN_LEFT_SHIFT);
+    if(match(l, '>') && matchNext(l, '>') && (l->input[l->pos+2] == '=')) 
+        return createThreeChars(l, '>', '>', '=', TOK_ASSIGN_RIGHT_SHIFT);
+
+    if(match(l, '-') && matchNext(l, '>')) return createTwoChars(l, '-', '>', TOK_RARROW);
+    if(match(l, '=') && matchNext(l, '=')) return createTwoChars(l, '=', '=', TOK_OP_EQ);
+    if(match(l, '!') && matchNext(l, '=')) return createTwoChars(l, '!', '=', TOK_OP_NEQ);
+    if(match(l, '<') && matchNext(l, '=')) return createTwoChars(l, '<', '=', TOK_OP_LTE);
+    if(match(l, '>') && matchNext(l, '=')) return createTwoChars(l, '>', '=', TOK_OP_GTE);
+    if(match(l, '&') && matchNext(l, '&')) return createTwoChars(l, '&', '&', TOK_OP_AND);
+    if(match(l, '+') && matchNext(l, '=')) return createTwoChars(l, '+', '=', TOK_ASSIGN_PLUS);
+    if(match(l, '-') && matchNext(l, '=')) return createTwoChars(l, '-', '=', TOK_ASSIGN_MINUS);
+    if(match(l, '*') && matchNext(l, '=')) return createTwoChars(l, '*', '=', TOK_ASSIGN_MULTIPLY);
+    if(match(l, '/') && matchNext(l, '=')) return createTwoChars(l, '/', '=', TOK_ASSIGN_DIVISION);
+    if(match(l, '%') && matchNext(l, '=')) return createTwoChars(l, '%', '=', TOK_ASSIGN_MODULO);
+    if(match(l, '^') && matchNext(l, '=')) return createTwoChars(l, '^', '=', TOK_ASSIGN_BITWISE_XOR);
+    if(match(l, '+') && matchNext(l, '+')) return createTwoChars(l, '+', '+', TOK_INCREMENT);
+    if(match(l, '-') && matchNext(l, '-')) return createTwoChars(l, '-', '-', TOK_DECREMENT);
+    if(match(l, '|') && matchNext(l, '|')) return createTwoChars(l, '|', '|', TOK_OP_OR);
+    if(match(l, '|') && matchNext(l, '=')) return createTwoChars(l, '|', '=', TOK_ASSIGN_BITWISE_OR);
 
     if(isalpha(peek(l))) {
         return scanKeyword(l);
@@ -186,11 +257,23 @@ Token getNextToken(Lexer *l) {
         case '}': return createToken(l, "}", TOK_RBRACE);
         case '[': return createToken(l, "[", TOK_LBRACKETS);
         case ']': return createToken(l, "]", TOK_RBRACKETS);
-        case ',': return createToken(l, "(", TOK_COMMA);
+        case ',': return createToken(l, ",", TOK_COMMA);
         case ':': return createToken(l, ":", TOK_COLON);
         case ';': return createToken(l, ";", TOK_SEMICOLON);
         case '?': return createToken(l, "?", TOK_OP_UNARY);
+        case '=': return createToken(l, "=", TOK_ASSIGNMENT);
+        case '%': return createToken(l, "%", TOK_MODULO);
+        case '^': return createToken(l, "^", TOK_EXPONENT);
+        case '<': return createToken(l, "<", TOK_OP_LT);
+        case '>': return createToken(l, ">", TOK_OP_GT);
+        case '+': return createToken(l, "+", TOK_PLUS);
+        case '-': return createToken(l, "-", TOK_MINUS);
+        case '*': return createToken(l, "*", TOK_MULTIPLY);
+        case '/': return createToken(l, "/", TOK_DIVISION);
+        
 
         break;
     }
+
+    return token;
 }
