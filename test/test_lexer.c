@@ -80,29 +80,29 @@ void test_identifier(void) {
 //     free_lexer(l);
 // }
 
-// void test_number(void) {
-//     struct {
-//         char *input;
-//         TokenType type;
-//     } test_case[] = {
-//         {"1", TK_NUMBER},
-//         {"123", TK_NUMBER},
-//         {"3.14", TK_DOUBLE},
-//     };
+void test_number(void) {
+    struct {
+        char *input;
+        TokenType type;
+    } keywords[] = {
+        {"1", TOK_INT},
+        {"123", TOK_INT},
+        // {"3.14", TOK_DOUBLE},
+    };
 
-//     int size_test_case = sizeof(test_case)/sizeof(test_case[0]);
+    int size_mark = sizeof(keywords)/sizeof(keywords[0]);
 
-//     for(int i = 0; i < size_test_case; i++) {
-//         Lexer *l = init_lexer(test_case[i].input);
+    for(int i = 0; i < size_mark; i++) {
+        Lexer lexer;
+        Token token;
 
-//         Token *t = tokenize(l);
-//         TEST_ASSERT_EQUAL(test_case[i].type, t->type);
-//         TEST_ASSERT_EQUAL_STRING(test_case[i].input, t->literal);
+        createLexer(&lexer, keywords[i].input);
 
-//         free_token(t);
-//         free_lexer(l);
-//     }
-// }
+        token = getNextToken(&lexer);
+        TEST_ASSERT_EQUAL_STRING(keywords[i].input, token.lexeme);
+        TEST_ASSERT_EQUAL(keywords[i].type, token.type);
+    }
+}
 
 // void test_operators(void) {
 //     struct {
@@ -154,7 +154,7 @@ int main(void) {
 
     RUN_TEST(test_keyword);
     RUN_TEST(test_identifier);
-    // RUN_TEST(test_number);
+    RUN_TEST(test_number);
     // RUN_TEST(test_string);
     // RUN_TEST(test_operators);
 

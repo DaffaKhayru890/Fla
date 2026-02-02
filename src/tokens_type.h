@@ -15,6 +15,14 @@ typedef enum {
     TOK_KEY_TRUE,
     TOK_KEY_FALSE,
 
+    // delimiters
+    TOK_LPAREN,
+    TOK_RPAREN,
+    TOK_LBRACE,
+    TOK_RBRACE,
+    TOK_LBRACKETS,
+    TOK_RBRACKETS,
+
     // unique
     TOK_IDENTIFIER,
 
@@ -39,6 +47,8 @@ typedef enum {
     // single marks
     TOK_OP_UNARY,
     TOK_COMMA,
+    TOK_SEMICOLON,
+    TOK_COLON,
 
     // literal
     TOK_STRING,
