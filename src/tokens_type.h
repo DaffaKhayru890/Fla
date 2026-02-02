@@ -3,9 +3,12 @@
 
 typedef enum {
     // base keyword
+    TOK_KEY_USE,
     TOK_KEY_FUN,
     TOK_KEY_IF,
     TOK_KEY_ELSE,
+    TOK_KEY_BREAK,
+    TOK_KEY_CONTINUE,
     TOK_KEY_WHILE,
     TOK_KEY_FOR,
     TOK_KEY_SWITCH,
