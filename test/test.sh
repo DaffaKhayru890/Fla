@@ -9,6 +9,10 @@ if [ "$arg" = "lexer" ]; then
     gcc ../src/lexer.c ./unity.c ./test_lexer.c -o fla
     ./fla
     rm ./fla
+elif [ "$arg" = "ast" ]; then
+    gcc ../src/ast.c ./test_ast.c -o fla
+    ./fla
+    rm ./fla
 fi
 
 # elif [ "$arg" = "parser" ]; then
