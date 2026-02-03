@@ -1,22 +1,25 @@
 #ifndef FLA_STATEMENTS_H
 #define FLA_STATEMENTS_H
 
-#include "../../include/node.h"
+#include "./node.h"
+#include "./literal.h"
 
 typedef struct {
+    NodeType node_type;
     char *identifier;
     char *return_type;
-    char* function_name;
-    ASTNode* arguments;    
+    ASTNode *arguments;    
     int arg_count;
     int arg_capacity;
 }FunctionDeclaration;
 
 typedef struct {
-    ASTNode* return_value;
+    NodeType node_type;
+    ASTNode *return_value;
 }Return;
 
 typedef struct {
+    NodeType node_type;
     ASTNode *statements;
     int count;
     int capacity;
@@ -25,36 +28,41 @@ typedef struct {
 typedef struct {
     char *identifier;
     char *type;
+    ASTNode *init;
 }VariableDeclaration;
 
 typedef struct {
+    NodeType node_type;
     int elseif_count;
-    ASTNode* condition;     
-    ASTNode* then_branch;   
-    ASTNode* else_branch;   
+    ASTNode *condition;     
+    ASTNode *then_branch;   
+    ASTNode *else_branch;   
 }If;
 
 typedef struct {
-    ASTNode* condition;   
-    ASTNode* body;  
+    NodeType node_type;
+    ASTNode *condition;   
+    ASTNode *body;  
 }While;
 
 typedef struct {
-    ASTNode* initializer;   
-    ASTNode* condition;     
-    ASTNode* increment;     
-    ASTNode* body;          
+    NodeType node_type;
+    ASTNode *preclause;   
+    ASTNode *condition;     
+    ASTNode *postclause;     
+    ASTNode *body;          
 }For;
 
 typedef struct {
-    
+    NodeType node_type;
 }Break;
 
 typedef struct {
-    
+    NodeType node_type;
 }Continue;
 
 typedef struct {
+    NodeType node_type;
     int case_count;
     ASTNode *expression;
     ASTNode *body;
