@@ -54,7 +54,7 @@ void createModuleNode(ASTNode **handle_node, char *name);
 
 void createParamNode(ASTNode **handle_node, char *name, char *type);
 
-void createFuncDeclNode(ASTNode **handle_node, char *identifier, char *return_type, int arg_count, int capacity);
+void createFuncDeclNode(ASTNode **handle_node, char *identifier, char *return_type, int param_count);
 void createReturnNode(ASTNode **handle_node);
 void createBlockNode(ASTNode **handle_node);
 void createVarDeclNode(ASTNode **handle_node, char *identifier, char *type);

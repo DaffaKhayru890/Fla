@@ -74,7 +74,7 @@ void test_all_node()
                 &node, test_cases[i].params[0], test_cases[i].params[1],
                 test_cases[i].params[2], test_cases[i].params[3]);
             break;
-        case 7:
+        case 7: // Literal with all params
             ((void (*)(ASTNode **, LiteralType, int, double, char, char *, bool))test_cases[i].creator_func)(
                 &node,
                 (LiteralType)test_cases[i].params[0],
@@ -82,7 +82,8 @@ void test_all_node()
                 test_cases[i].params[2] ? *(double *)test_cases[i].params[2] : 0.0,
                 (char)(intptr_t)test_cases[i].params[3],
                 (char *)test_cases[i].params[4],
-                (bool)(intptr_t)test_cases[i].params[5]);
+                (bool)(intptr_t)test_cases[i].params[5]
+            );
             break;
         }
 

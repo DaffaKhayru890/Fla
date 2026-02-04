@@ -152,8 +152,6 @@ void freeAstNode(ASTNode *node, bool freeSelf) {
     }
 }
 
-// ================================= Statement node =================================
-
 void createProgramNode(ASTNode **handle_node) {
     *handle_node = ALLOCATE(ASTNode, 1);
 
@@ -168,14 +166,14 @@ void createModuleNode(ASTNode **handle_node, char *name) {
     (*handle_node)->module.body = NULL;
 }
 
-void createFuncDeclNode(ASTNode **handle_node, char *identifier, char *return_type, int arg_count, int capacity) {
+// ================================= Statement node =================================
+
+void createFuncDeclNode(ASTNode **handle_node, char *identifier, char *return_type, int param_count) {
     *handle_node = ALLOCATE(ASTNode, 1);
 
     (*handle_node)->node_type = NODE_FUNCTION_DECLARATION;
     (*handle_node)->function_delcaration.identifier = strdup(identifier);
     (*handle_node)->function_delcaration.return_type = strdup(return_type);
-    (*handle_node)->function_delcaration.arg_count = arg_count;
-    (*handle_node)->function_delcaration.arg_capacity = capacity;
     (*handle_node)->function_delcaration.parameters = NULL;
 }
 
@@ -257,87 +255,6 @@ void createSwitchNode(ASTNode **handle_node, int case_count) {
     (*handle_node)->switch_statement.case_count = case_count;
     (*handle_node)->switch_statement.expression = NULL;
     (*handle_node)->switch_statement.body = NULL;
-}
-
-// ================================= Add child function =================================
-
-void addChildToParent(ASTNode *parent, ASTNode *child) {
-    if(!parent || !child) return;
-
-    switch(parent->node_type) {
-        case NODE_MODULE:
-            
-        break;
-
-        case NODE_FUNCTION_DECLARATION:
-            
-        break;
-
-        case NODE_RETURN_STATEMENT:
-            
-        break;
-
-        case NODE_BLOCK_STATEMENT:
-            
-        break;
-
-        case NODE_VARIABLE_DECLARATION:
-            
-        break;
-
-        case NODE_BREAK_STATEMENT:
-        case NODE_CONTINUE_STATEMENT:
-            
-        break;
-
-        case NODE_IF_STATEMENT:
-            
-        break;
-
-        case NODE_WHILE_STATEMENT:
-            
-        break;
-
-        case NODE_FOR_STATEMENT:
-            
-        break;
-
-        case NODE_SWITCH_STATEMENT:
-            
-        break;
-
-        case NODE_IDENTIFIER_EXPRESSION:
-            
-        break;
-
-        case NODE_BINARY_EXPRESSION:
-            
-        break;
-
-        case NODE_UNARY_EXPRESSION:
-            
-        break;
-
-        case NODE_TERNARY_EXPRESSION:
-            
-        break;
-
-        case NODE_GROUPING_EXPRESSION:
-            
-        break;
-
-        case NODE_COMPOUND_EXPRESSION:
-            
-        break;
-
-        case NODE_FUNCTION_CALL_EXPRESSION:
-            
-        break;
-
-        case NODE_LITERAL_EXPRESSION:
-            
-        break;
-    }
 }
 
 // ============================== Expression node ==============================

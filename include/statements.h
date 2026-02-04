@@ -7,9 +7,8 @@
 typedef struct {
     char *identifier;
     char *return_type;
+    int param_count;
     ASTNode **parameters;    
-    int arg_count;
-    int arg_capacity;
 }FunctionDeclaration;
 
 typedef struct {

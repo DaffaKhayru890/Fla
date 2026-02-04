@@ -50,6 +50,7 @@ ASTNode *parseModule(Parser *p, Lexer *l) {
     switch(p->current.type) {
         case TOK_KEY_FUN:
             ASTNode *parse_func_decl = parseFuncDecl(p, l);
+            moduleNode->body = parse_func_decl;
         break;
     }
 
