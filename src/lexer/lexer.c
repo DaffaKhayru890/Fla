@@ -63,7 +63,7 @@ static void skipComment(Lexer *l) {
 static Token createToken(Lexer *l, char *lexeme ,TokenType type) {
     Token token;
 
-    strcpy(token.lexeme, lexeme);
+    strncpy(token.lexeme, lexeme, MAX_LITERAL - 1);
     token.type = type;
 
     return token;
@@ -165,6 +165,9 @@ static Token scanString(Lexer *l) {
 
     if(l->current != '"') {
         Token token;
+
+        token.type = TOK_ERROR;
+
         return token;
     };
 
@@ -174,7 +177,7 @@ static Token scanString(Lexer *l) {
 
     advanced(l);
 
-    while(l->current != '"' && posLexeme < MAX_LITERAL - 1) {
+    while(!isAtEnd(l) && l->current != '"' && posLexeme < MAX_LITERAL - 1) {
         token.lexeme[posLexeme] = l->current;
 
         advanced(l);
@@ -290,32 +293,32 @@ Token getNextToken(Lexer *l) {
     advanced(l);
 
     switch(ch) {
-        case '(': return createToken(l, "(", TOK_LPAREN);
-        case ')': return createToken(l, ")", TOK_RPAREN);
-        case '{': return createToken(l, "{", TOK_LBRACE);
-        case '}': return createToken(l, "}", TOK_RBRACE);
-        case '[': return createToken(l, "[", TOK_LBRACKETS);
-        case ']': return createToken(l, "]", TOK_RBRACKETS);
-        case ',': return createToken(l, ",", TOK_COMMA);
-        case ':': return createToken(l, ":", TOK_COLON);
-        case ';': return createToken(l, ";", TOK_SEMICOLON);
-        case '?': return createToken(l, "?", TOK_OP_UNARY);
-        case '=': return createToken(l, "=", TOK_ASSIGNMENT);
-        case '%': return createToken(l, "%", TOK_MODULO);
-        case '^': return createToken(l, "^", TOK_EXPONENT);
-        case '<': return createToken(l, "<", TOK_OP_LT);
-        case '>': return createToken(l, ">", TOK_OP_GT);
-        case '+': return createToken(l, "+", TOK_PLUS);
-        case '-': return createToken(l, "-", TOK_MINUS);
-        case '*': return createToken(l, "*", TOK_MULTIPLY);
-        case '/': return createToken(l, "/", TOK_DIVISION);
+        case '(': return createToken(l, "(", TOK_LPAREN); break;
+        case ')': return createToken(l, ")", TOK_RPAREN); break;
+        case '{': return createToken(l, "{", TOK_LBRACE); break;
+        case '}': return createToken(l, "}", TOK_RBRACE); break;
+        case '[': return createToken(l, "[", TOK_LBRACKETS); break;
+        case ']': return createToken(l, "]", TOK_RBRACKETS); break;
+        case ',': return createToken(l, ",", TOK_COMMA); break;
+        case ':': return createToken(l, ":", TOK_COLON); break;
+        case ';': return createToken(l, ";", TOK_SEMICOLON); break;
+        case '?': return createToken(l, "?", TOK_OP_UNARY); break;
+        case '=': return createToken(l, "=", TOK_ASSIGNMENT); break;
+        case '%': return createToken(l, "%", TOK_MODULO); break;
+        case '^': return createToken(l, "^", TOK_EXPONENT); break;
+        case '<': return createToken(l, "<", TOK_OP_LT); break;
+        case '>': return createToken(l, ">", TOK_OP_GT); break;
+        case '+': return createToken(l, "+", TOK_PLUS); break;
+        case '-': return createToken(l, "-", TOK_MINUS); break;
+        case '*': return createToken(l, "*", TOK_MULTIPLY); break;
+        case '/': return createToken(l, "/", TOK_DIVISION); break;
         
-        break;
+        
     }
 
     token.type = TOK_ERROR;
     token.isError = true;
-    snprintf(token.message, sizeof(MESSAGE_SIZE), "Invalid character: %c", l->current);
+    snprintf(token.message, sizeof(token.message), "Invalid character: %c", l->current);
 
     return token;
 }

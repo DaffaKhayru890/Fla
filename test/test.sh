@@ -10,7 +10,7 @@ if [ "$arg" = "lexer" ]; then
     ./fla
     rm ./fla
 elif [ "$arg" = "ast" ]; then
-    gcc ../src/ast.c ./test_ast.c -o fla
+    gcc ../src/ast/ast.c ../src/memory/memory.c ./unity.c ./test_ast.c -o fla
     ./fla
     rm ./fla
 fi

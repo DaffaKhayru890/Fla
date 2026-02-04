@@ -12,6 +12,20 @@ typedef struct {
 
 void createParser(Parser *p, Lexer *l);
 
-ASTNode *parse_program(Parser *p);
+ASTNode *parseProgram(Parser *p, Lexer *l);
+ASTNode *parseModule(Parser *p, Lexer *l);
+
+ASTNode *parseFuncDecl(Parser *p, Lexer *l);
+ASTNode *parseReturn(Parser *p, Lexer *l);
+ASTNode *parseBlock(Parser *p, Lexer *l);
+ASTNode *parseVarDecl(Parser *p, Lexer *l);
+ASTNode *parseIf(Parser *p, Lexer *l);
+ASTNode *parseWhile(Parser *p, Lexer *l);
+ASTNode *parseFor(Parser *p, Lexer *l);
+ASTNode *parseSwitch(Parser *p, Lexer *l);
+
+void advanced(Parser *p, Lexer *l);
+bool match(Parser *p, TokenType type);
+void eatToken(Parser *p, Lexer *l, TokenType type);
 
 #endif

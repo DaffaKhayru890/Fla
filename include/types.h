@@ -79,6 +79,7 @@ typedef enum {
     TOK_CHAR,
     TOK_INT,
     TOK_DOUBLE,
+    TOK_BOOLEAN,
 
     // others
     TOK_ERROR,

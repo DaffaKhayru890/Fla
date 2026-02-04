@@ -23,7 +23,7 @@ static void freeNode(ASTNode **node) {
 
 static void freeArrayNode(ASTNode ***node) {
     if(node && *node) {
-        for(int i = 0; i < (*node)[i] != NULL; i++) {
+        for(int i = 0; (*node)[i] != NULL; i++) {
             freeAstNode((*node)[i], true);
         }
 
@@ -31,6 +31,8 @@ static void freeArrayNode(ASTNode ***node) {
         *node = NULL;
     }
 }
+
+// ======================================= Free memory =======================================
 
 static void freeLiteralNode(ASTNode *node) {
     if(!node) return;
@@ -177,7 +179,7 @@ void createFuncDeclNode(ASTNode **handle_node, char *identifier, char *return_ty
     (*handle_node)->function_delcaration.parameters = NULL;
 }
 
-void createParamsNode(ASTNode **handle_node, char *name, char *type) {
+void createParamNode(ASTNode **handle_node, char *name, char *type) {
     *handle_node = ALLOCATE(ASTNode, 1);
 
     (*handle_node)->node_type = NODE_PARAMETER;
@@ -257,8 +259,85 @@ void createSwitchNode(ASTNode **handle_node, int case_count) {
     (*handle_node)->switch_statement.body = NULL;
 }
 
-void addChildToParent() {
+// ================================= Add child function =================================
 
+void addChildToParent(ASTNode *parent, ASTNode *child) {
+    if(!parent || !child) return;
+
+    switch(parent->node_type) {
+        case NODE_MODULE:
+            
+        break;
+
+        case NODE_FUNCTION_DECLARATION:
+            
+        break;
+
+        case NODE_RETURN_STATEMENT:
+            
+        break;
+
+        case NODE_BLOCK_STATEMENT:
+            
+        break;
+
+        case NODE_VARIABLE_DECLARATION:
+            
+        break;
+
+        case NODE_BREAK_STATEMENT:
+        case NODE_CONTINUE_STATEMENT:
+            
+        break;
+
+        case NODE_IF_STATEMENT:
+            
+        break;
+
+        case NODE_WHILE_STATEMENT:
+            
+        break;
+
+        case NODE_FOR_STATEMENT:
+            
+        break;
+
+        case NODE_SWITCH_STATEMENT:
+            
+        break;
+
+        case NODE_IDENTIFIER_EXPRESSION:
+            
+        break;
+
+        case NODE_BINARY_EXPRESSION:
+            
+        break;
+
+        case NODE_UNARY_EXPRESSION:
+            
+        break;
+
+        case NODE_TERNARY_EXPRESSION:
+            
+        break;
+
+        case NODE_GROUPING_EXPRESSION:
+            
+        break;
+
+        case NODE_COMPOUND_EXPRESSION:
+            
+        break;
+
+        case NODE_FUNCTION_CALL_EXPRESSION:
+            
+        break;
+
+        case NODE_LITERAL_EXPRESSION:
+            
+        break;
+    }
 }
 
 // ============================== Expression node ==============================
@@ -327,5 +406,10 @@ void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, int int_
 
     (*handle_node)->node_type = NODE_LITERAL_EXPRESSION;
     (*handle_node)->literal.literal_type = literal_type;
-    (*handle_node)->literal.
+
+    (*handle_node)->literal.int_value = int_value ? int_value : 0;
+    (*handle_node)->literal.double_value = double_value ? double_value : 0.0;
+    (*handle_node)->literal.char_value = char_value ? char_value : '\0';
+    (*handle_node)->literal.string_value = string_value ? string_value : "";
+    (*handle_node)->literal.bool_value = boolean_value ? boolean_value : false;
 }

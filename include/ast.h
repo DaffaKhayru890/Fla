@@ -18,7 +18,7 @@ typedef struct {
     ASTNode **body;
 }Module;
 
-typedef struct {
+struct ASTNode {
     NodeType node_type;
     ASTNode **body;
     
@@ -47,12 +47,12 @@ typedef struct {
         Compound compound;
         FunctionCall function_call;
     };
-}ASTNode;
+};
 
 void createProgramNode(ASTNode **handle_node);
 void createModuleNode(ASTNode **handle_node, char *name);
 
-void createParamsNode(ASTNode **handle_node, char *name, char *type);
+void createParamNode(ASTNode **handle_node, char *name, char *type);
 
 void createFuncDeclNode(ASTNode **handle_node, char *identifier, char *return_type, int arg_count, int capacity);
 void createReturnNode(ASTNode **handle_node);
