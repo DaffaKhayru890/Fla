@@ -67,18 +67,17 @@ void test_identifier(void) {
     }
 } 
 
-// void test_string(void) {
-//     char *source = "\"hello\"";
-//     Lexer *l = init_lexer(source);
+void test_string(void) {
+    char *source = "\"hello\"";
+
+    Lexer lexer;
+    Token token;
+
+    createLexer(&lexer, source);
     
-    
-//     Token *t = tokenize(l);
-    
-//     TEST_ASSERT_EQUAL(TK_STRING, t->type);
-//     TEST_ASSERT_EQUAL_STRING("hello", t->literal);
-    
-//     free_lexer(l);
-// }
+    TEST_ASSERT_EQUAL(TOK_STRING, token.type);
+    TEST_ASSERT_EQUAL_STRING("\"hello\"", token.lexeme);
+}
 
 void test_number(void) {
     struct {
@@ -158,7 +157,7 @@ int main(void) {
     RUN_TEST(test_keyword);
     RUN_TEST(test_identifier);
     RUN_TEST(test_number);
-    // RUN_TEST(test_string);
+    RUN_TEST(test_string);
     RUN_TEST(test_operators);
 
     printf("\n");

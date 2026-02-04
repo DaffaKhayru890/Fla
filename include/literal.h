@@ -2,6 +2,7 @@
 #define FLA_LITERAL_H
 
 #include "./node.h"
+#include <stdbool.h>
 
 typedef enum {
     LITERAL_INT,

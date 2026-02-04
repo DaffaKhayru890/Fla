@@ -81,7 +81,7 @@ typedef enum {
     TOK_DOUBLE,
 
     // others
-    TOK_ERRORS,
+    TOK_ERROR,
     TOK_UNKNOWN,
     TOK_EOF
 }TokenType;

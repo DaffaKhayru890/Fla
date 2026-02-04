@@ -6,7 +6,7 @@ fi
 arg=$1
 
 if [ "$arg" = "lexer" ]; then
-    gcc ../src/lexer.c ./unity.c ./test_lexer.c -o fla
+    gcc ../src/lexer/lexer.c ./unity.c ./test_lexer.c -o fla
     ./fla
     rm ./fla
 elif [ "$arg" = "ast" ]; then

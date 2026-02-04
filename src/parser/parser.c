@@ -42,7 +42,13 @@ ASTNode *parse_program(Parser *p) {
 
     createProgramNode(program);
 
-    
-
     return program;
+}
+
+static ASTNode *parse_module(Parser *p) {
+    ASTNode *module = NULL;
+
+    createModuleNode(module, "main");
+
+    return module;
 }

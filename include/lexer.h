@@ -3,11 +3,16 @@
 
 #include "./types.h"
 
+#include <stdbool.h>
+
 #define MAX_LITERAL 256
+#define MESSAGE_SIZE 400
 
 typedef struct {
     TokenType type;
     char lexeme[MAX_LITERAL];
+    char message[MESSAGE_SIZE];
+    bool isError;
 }Token;
 
 typedef struct {

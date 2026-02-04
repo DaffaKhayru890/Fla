@@ -1,6 +1,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdio.h>
 
 #include "../../include/lexer.h"
 
@@ -151,6 +153,43 @@ static Token scanKeyword(Lexer *l) {
     return token;
 }
 
+static Token scanString(Lexer *l) {
+    if(isAtEnd(l)) {
+        Token token;
+
+        token.lexeme[0] = '\0';
+        token.type = TOK_EOF;
+
+        return token;
+    }
+
+    if(l->current != '"') {
+        Token token;
+        return token;
+    };
+
+    Token token;
+
+    int posLexeme = 0;
+
+    advanced(l);
+
+    while(l->current != '"' && posLexeme < MAX_LITERAL - 1) {
+        token.lexeme[posLexeme] = l->current;
+
+        advanced(l);
+
+        posLexeme++;
+    }
+
+    advanced(l);
+
+    token.lexeme[posLexeme] = '\0';
+    token.type = TOK_STRING;
+
+    return token;
+}
+
 static Token scanDigit(Lexer *l) {
     if(isAtEnd(l)) {
         Token token;
@@ -271,9 +310,12 @@ Token getNextToken(Lexer *l) {
         case '*': return createToken(l, "*", TOK_MULTIPLY);
         case '/': return createToken(l, "/", TOK_DIVISION);
         
-
         break;
     }
+
+    token.type = TOK_ERROR;
+    token.isError = true;
+    snprintf(token.message, sizeof(MESSAGE_SIZE), "Invalid character: %c", l->current);
 
     return token;
 }

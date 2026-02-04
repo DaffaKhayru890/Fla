@@ -21,7 +21,10 @@ typedef struct {
 
 union ASTNode {
     NodeType node_type;
+
+    Program;
     Module module;
+
     FunctionDeclaration function_delcaration;
     Block block_statement;
     Return return_function;
@@ -32,23 +35,41 @@ union ASTNode {
     While while_statement;
     For for_statement;
     Switch switch_statement;
+
+    Literal literal;
+    Identifier identifier;
+    Binary binary;
+    Unary unary;
+    Ternary tenary;
+    Grouping grouping;
+    Compound compound;
+    FunctionCall function_call;
 };
 
-ASTNode *createProgramNode(ASTNode **handle);
-ASTNode *createModuleNode(ASTNode **handle, char *name);
+void createProgramNode(ASTNode **handle_node);
+void createModuleNode(ASTNode **handle_node, char *name);
 
-ASTNode *createFuncDeclNode(ASTNode **handle, char *identifier, char *return_type, int arg_count, int capacity);
-ASTNode *createReturnNode(ASTNode **handle);
-ASTNode *createBlockNode(ASTNode **handle);
-ASTNode *createVarDeclNode(ASTNode **handle, char *identifier, char *type);
-ASTNode *createIfNode(ASTNode **handle, int elseif_count);
-ASTNode *createWhileNode(ASTNode **handle);
-ASTNode *createForNode(ASTNode **handle);
-ASTNode *createBreakNode(ASTNode **handle);
-ASTNode *createContinueNode(ASTNode **handle);
-ASTNode *createSwitchNode(ASTNode **handle, int case_count);
+void createFuncDeclNode(ASTNode **handle_node, char *identifier, char *return_type, int arg_count, int capacity);
+void createReturnNode(ASTNode **handle_node);
+void createBlockNode(ASTNode **handle_node);
+void createVarDeclNode(ASTNode **handle_node, char *identifier, char *type);
+void createIfNode(ASTNode **handle_node, int elseif_count);
+void createWhileNode(ASTNode **handle_node);
+void createForNode(ASTNode **handle_node);
+void createBreakNode(ASTNode **handle_node);
+void createContinueNode(ASTNode **handle_node);
+void createSwitchNode(ASTNode **handle_node, int case_count);
 
+void createIdentifierNode(ASTNode **handle_node, char *name);
+void createBinaryNode(ASTNode **handle_node, char *op);
+void createUnaryNode(ASTNode **handle_node, char *op);
+void createTenaryNode(ASTNode **handle_node);
+void createGroupingNode(ASTNode **handle_node);
+void createCompoundNode(ASTNode **handle_node, int count, int capacity);
+void createFunctionCallNode(ASTNode **handle_node, char *function_name, int arg_count, int arg_capacity);
+void createLiteralNode(ASTNode **handle_node, LiteralType literal_type);
 
+void addModuleToProgram(ASTNode *parent, ASTNode *child);
 
 void freeAstNode(ASTNode *node, bool freeSelf);
 
