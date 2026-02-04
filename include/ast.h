@@ -9,45 +9,50 @@
 #include <stdbool.h>
 
 typedef struct {
-    NodeType node_type;
     char *name;
-    ASTNode *body;
+    char *type;
+}Parameter;
+
+typedef struct {
+    char *name;
+    ASTNode **body;
 }Module;
 
 typedef struct {
     NodeType node_type;
-    ASTNode *body;
-}Program;
+    ASTNode **body;
+    
+    union {
+        Module module;
 
-union ASTNode {
-    NodeType node_type;
+        Parameter parameter;
 
-    Program;
-    Module module;
+        FunctionDeclaration function_delcaration;
+        Block block_statement;
+        Return return_function;
+        VariableDeclaration variable_declaration;
+        If if_statement;
+        Break breal_statement;
+        Continue continue_statement;
+        While while_statement;
+        For for_statement;
+        Switch switch_statement;
 
-    FunctionDeclaration function_delcaration;
-    Block block_statement;
-    Return return_function;
-    VariableDeclaration variable_declaration;
-    If if_statement;
-    Break breal_statement;
-    Continue continue_statement;
-    While while_statement;
-    For for_statement;
-    Switch switch_statement;
-
-    Literal literal;
-    Identifier identifier;
-    Binary binary;
-    Unary unary;
-    Ternary tenary;
-    Grouping grouping;
-    Compound compound;
-    FunctionCall function_call;
-};
+        Literal literal;
+        Identifier identifier;
+        Binary binary;
+        Unary unary;
+        Ternary tenary;
+        Grouping grouping;
+        Compound compound;
+        FunctionCall function_call;
+    };
+}ASTNode;
 
 void createProgramNode(ASTNode **handle_node);
 void createModuleNode(ASTNode **handle_node, char *name);
+
+void createParamsNode(ASTNode **handle_node, char *name, char *type);
 
 void createFuncDeclNode(ASTNode **handle_node, char *identifier, char *return_type, int arg_count, int capacity);
 void createReturnNode(ASTNode **handle_node);
@@ -67,7 +72,7 @@ void createTenaryNode(ASTNode **handle_node);
 void createGroupingNode(ASTNode **handle_node);
 void createCompoundNode(ASTNode **handle_node, int count, int capacity);
 void createFunctionCallNode(ASTNode **handle_node, char *function_name, int arg_count, int arg_capacity);
-void createLiteralNode(ASTNode **handle_node, LiteralType literal_type);
+void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, int int_value, double double_value, char char_value, char *string_value, bool boolean_value);
 
 void addModuleToProgram(ASTNode *parent, ASTNode *child);
 

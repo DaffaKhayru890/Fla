@@ -2,23 +2,25 @@
 #define FLA_MEMORY_H
 
 #include <stdlib.h>
+#include <stddef.h>
 
 #define ALLOCATE(type, count) \
-    (type*)reallocate(NULL, 0, sizeof(type) * count)
+    ((type*)allocate(NULL, sizeof(type) * (count)))
 
-#define FREE(type, pointer) \
-    reallocate(pointer, sizeof(type), 0)
+#define FREE(pointer) \
+    (freeMemory(pointer))
+
+#define GROW(type, pointer, newCount) \
+    ((type*)reallocate((pointer), sizeof(type) * (newCount)))
 
 #define GROW_CAPACITY(capacity) \
-    ((capacity) < 4 ? 4 : (capacity) * 2)
+    (((capacity) < 8) ? 8 : ((capacity) * 2))
 
-#define GROW_ARRAY(type, pointer, oldCount, newCount) \
-    (type*)reallocate(pointer, sizeof(type) * oldCount, sizeof(type) * newCount)
+#define GROW_ARRAY(type, pointer, oldCapacity, newCapacity) \
+    ((type*)reallocate((pointer), sizeof(type) * (newCapacity)))
 
-#define FREE_ARRAY(type, pointer, oldCount) \
-    reallocate(pointer, sizeof(type) * (oldCount), 0)
-
-void *allocate(void *pointer, size_t size);
-void *
+void* allocate(void* pointer, size_t size);
+void* reallocate(void* pointer, size_t new_size);
+void freeMemory(void* pointer);
 
 #endif

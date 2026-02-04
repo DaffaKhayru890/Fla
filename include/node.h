@@ -1,11 +1,13 @@
 #ifndef FLA_NODE_H
 #define FLA_NODE_H
 
-typedef union ASTNode ASTNode;
+typedef struct ASTNode ASTNode;
 
 typedef enum {
     NODE_PROGRAM,
     NODE_MODULE,
+
+    NODE_PARAMETER,
 
     NODE_FUNCTION_DECLARATION,
     NODE_VARIABLE_DECLARATION,
