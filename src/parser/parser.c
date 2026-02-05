@@ -129,7 +129,7 @@ ASTNode *parseProgram(Parser *p, Lexer *l) {
 
     createProgramNode(&programNode);
 
-    programNode->body = ALLOCATE(ASTNode*, 1);
+    programNode->body = (ASTNode**)malloc(sizeof(ASTNode));
  
     programNode->body[0] = parseModule(p,l);
     programNode->body[1] = NULL;
@@ -145,14 +145,17 @@ ASTNode *parseModule(Parser *p, Lexer *l) {
     int capacity = 4;
     int count = 0;
 
-    moduleNode->module.body = ALLOCATE(ASTNode*, capacity);
+    moduleNode->module.body = (ASTNode**)malloc(sizeof(ASTNode));
 
     while(p->current.type != TOK_EOF) {
         switch(p->current.type) {
             case TOK_KEY_FUN:       
                 if(count >= capacity) {
-                    capacity *= 2;
-                    GROW(ASTNode*,moduleNode->module.body, capacity);
+                    capacity = capacity * 2;
+                    moduleNode->module.body = (ASTNode**)realloc(
+                        moduleNode->module.body,
+                        sizeof(ASTNode*)
+                    );
                 }
 
                 moduleNode->module.body[count++] = parseFuncDecl(p, l);

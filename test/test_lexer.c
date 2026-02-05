@@ -24,8 +24,6 @@ void test_keyword() {
         {"int", TOK_TYPE_INT},
         {"double", TOK_TYPE_DOUBLE},
         {"char", TOK_TYPE_CHAR},
-        {"boolean", TOK_TYPE_BOOLEAN},
-        {"string", TOK_TYPE_STRING},
         {"true", TOK_KEY_TRUE},
         {"false", TOK_KEY_FALSE},
     };
@@ -68,15 +66,17 @@ void test_identifier(void) {
 } 
 
 void test_string(void) {
-    char *source = "\"hello\"";
+    char *source = "\'h\'";
 
     Lexer lexer;
     Token token;
 
     createLexer(&lexer, source);
+
+    token = getNextToken(&lexer);
     
-    TEST_ASSERT_EQUAL(TOK_STRING, token.type);
-    TEST_ASSERT_EQUAL_STRING("\"hello\"", token.lexeme);
+    TEST_ASSERT_EQUAL(TOK_CHAR, token.type);
+    TEST_ASSERT_EQUAL_STRING("\'h\'", token.lexeme);
 }
 
 void test_number(void) {

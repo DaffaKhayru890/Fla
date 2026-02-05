@@ -14,7 +14,7 @@ elif [ "$arg" = "ast" ]; then
     ./fla
     rm ./fla
 elif [ "$arg" = "parser" ]; then
-    gcc ../src/lexer/lexer.c ../src/parser/*.c ../src/ast/ast.c ../src/memory/memory.c ./test_parser.c -o fla
+    gcc ../src/lexer/lexer.c ../src/utils/utils.c ../src/parser/*.c ../src/ast/ast.c ./test_parser.c -o fla
     ./fla
     rm ./fla
 fi

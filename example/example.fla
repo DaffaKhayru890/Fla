@@ -1,3 +1,4 @@
-fun main() -> int {
-    return 0;
+fun main(age: int, value: double) -> void {
+    var angka: int = 1;
+    var huruf: char = 'a';
 }

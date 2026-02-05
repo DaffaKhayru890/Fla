@@ -39,7 +39,6 @@ typedef struct {
     char *function_name;
     ASTNode **arguments;     
     int arg_count;
-    int arg_capacity;
 }FunctionCall;
 
 #endif

@@ -56,7 +56,7 @@ void createParamNode(ASTNode **handle_node, char *name, char *type);
 
 void createFuncDeclNode(ASTNode **handle_node, char *identifier, char *return_type, int param_count);
 void createReturnNode(ASTNode **handle_node);
-void createBlockNode(ASTNode **handle_node);
+void createBlockNode(ASTNode **handle_node, int statements_count);
 void createVarDeclNode(ASTNode **handle_node, char *identifier, char *type);
 void createIfNode(ASTNode **handle_node, int elseif_count);
 void createWhileNode(ASTNode **handle_node);
@@ -72,7 +72,7 @@ void createTenaryNode(ASTNode **handle_node);
 void createGroupingNode(ASTNode **handle_node);
 void createCompoundNode(ASTNode **handle_node, int count, int capacity);
 void createFunctionCallNode(ASTNode **handle_node, char *function_name, int arg_count, int arg_capacity);
-void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, int int_value, double double_value, char char_value, char *string_value, bool boolean_value);
+void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, void *value);
 
 void addModuleToProgram(ASTNode *parent, ASTNode *child);
 

@@ -24,6 +24,14 @@ ASTNode *parseWhile(Parser *p, Lexer *l);
 ASTNode *parseFor(Parser *p, Lexer *l);
 ASTNode *parseSwitch(Parser *p, Lexer *l);
 
+ASTNode *parseIdentifier(Parser *p, Lexer *l, char *name);
+ASTNode *parseBinary(Parser *p, Lexer *l, char *op);
+ASTNode *parseUnary(Parser *p, Lexer *l, char *op);
+ASTNode *parseTernary(Parser *p, Lexer *l);
+ASTNode *parseGrouping(Parser *p, Lexer *l);
+ASTNode *parserFunctionCall(Parser *p, Lexer *l, char *function_name, int arg_count);
+ASTNode *parseLiteral(Parser *p, Lexer *l);
+
 void advanced(Parser *p, Lexer *l);
 bool match(Parser *p, TokenType type);
 void eatToken(Parser *p, Lexer *l, TokenType type);

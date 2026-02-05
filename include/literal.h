@@ -7,19 +7,17 @@
 typedef enum {
     LITERAL_INT,
     LITERAL_DOUBLE,
+    LITERAL_FLOAT,
     LITERAL_CHAR,
-    LITERAL_STRING,
-    LITERAL_BOOLEAN
 }LiteralType;
 
 typedef struct {
     LiteralType literal_type;
     union {
-        int int_value;
-        double double_value;
-        char char_value;
-        char *string_value;
-        bool bool_value;
+        int *int_value;
+        float *float_value;
+        double *double_value;
+        char *char_value;
     };
 }Literal;
 

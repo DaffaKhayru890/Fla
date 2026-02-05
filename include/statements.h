@@ -8,7 +8,8 @@ typedef struct {
     char *identifier;
     char *return_type;
     int param_count;
-    ASTNode **parameters;    
+    ASTNode **parameters;  
+    ASTNode *body;  
 }FunctionDeclaration;
 
 typedef struct {
@@ -17,8 +18,7 @@ typedef struct {
 
 typedef struct {
     ASTNode **statements;
-    int count;
-    int capacity;
+    int statements_count;
 }Block;
 
 typedef struct {

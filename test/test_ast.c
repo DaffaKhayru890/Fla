@@ -41,8 +41,6 @@ void test_all_node()
         {NODE_LITERAL_EXPRESSION, createLiteralNode, {(void *)LITERAL_INT, (void *)42, NULL}, 7, "Literal Int"},
         {NODE_LITERAL_EXPRESSION, createLiteralNode, {(void *)LITERAL_DOUBLE, (void *)0, (void *)&(double){3.14}, NULL}, 7, "Literal Double"},
         {NODE_LITERAL_EXPRESSION, createLiteralNode, {(void *)LITERAL_CHAR, NULL, NULL, (void *)'A', NULL}, 7, "Literal Char"},
-        {NODE_LITERAL_EXPRESSION, createLiteralNode, {(void *)LITERAL_STRING, NULL, NULL, NULL, "hello", NULL}, 7, "Literal String"},
-        {NODE_LITERAL_EXPRESSION, createLiteralNode, {(void *)LITERAL_BOOLEAN, NULL, NULL, NULL, NULL, (void *)true}, 7, "Literal Bool"},
     };
 
     int num_tests = sizeof(test_cases) / sizeof(test_cases[0]);

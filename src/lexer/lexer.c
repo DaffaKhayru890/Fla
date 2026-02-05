@@ -145,15 +145,15 @@ static Token scanKeyword(Lexer *l) {
     if(strcmp(token.lexeme, "int") == 0) return createToken(l, "int", TOK_TYPE_INT);
     if(strcmp(token.lexeme, "double") == 0) return createToken(l, "double", TOK_TYPE_DOUBLE);
     if(strcmp(token.lexeme, "char") == 0) return createToken(l, "char", TOK_TYPE_CHAR);
-    if(strcmp(token.lexeme, "string") == 0) return createToken(l, "string", TOK_TYPE_STRING);
-    if(strcmp(token.lexeme, "boolean") == 0) return createToken(l, "boolean", TOK_TYPE_BOOLEAN);
+    if(strcmp(token.lexeme, "float") == 0) return createToken(l, "float", TOK_TYPE_FLOAT);
+    if(strcmp(token.lexeme, "void") == 0) return createToken(l, "void", TOK_TYPE_VOID);
 
     token.type = TOK_IDENTIFIER;
 
     return token;
 }
 
-static Token scanString(Lexer *l) {
+static Token scanChar(Lexer *l) {
     if(isAtEnd(l)) {
         Token token;
 
@@ -163,7 +163,7 @@ static Token scanString(Lexer *l) {
         return token;
     }
 
-    if(l->current != '"') {
+    if(l->current != '\'') {
         Token token;
 
         token.type = TOK_ERROR;
@@ -177,7 +177,7 @@ static Token scanString(Lexer *l) {
 
     advanced(l);
 
-    while(!isAtEnd(l) && l->current != '"' && posLexeme < MAX_LITERAL - 1) {
+    while(!isAtEnd(l) && l->current != '\'' && posLexeme < MAX_LITERAL - 1) {
         token.lexeme[posLexeme] = l->current;
 
         advanced(l);
@@ -188,7 +188,7 @@ static Token scanString(Lexer *l) {
     advanced(l);
 
     token.lexeme[posLexeme] = '\0';
-    token.type = TOK_STRING;
+    token.type = TOK_CHAR;
 
     return token;
 }
@@ -283,6 +283,10 @@ Token getNextToken(Lexer *l) {
 
     if(isalpha(peek(l))) {
         return scanKeyword(l);
+    }
+
+    if(peek(l) == '\'') {
+        return scanChar(l);
     }
 
     if(isdigit(peek(l))) {
