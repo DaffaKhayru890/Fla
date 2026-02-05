@@ -13,15 +13,9 @@ elif [ "$arg" = "ast" ]; then
     gcc ../src/ast/ast.c ../src/memory/memory.c ./unity.c ./test_ast.c -o fla
     ./fla
     rm ./fla
+elif [ "$arg" = "parser" ]; then
+    gcc ../src/lexer/lexer.c ../src/parser/*.c ../src/ast/ast.c ../src/memory/memory.c ./test_parser.c -o fla
+    ./fla
+    rm ./fla
 fi
-
-# elif [ "$arg" = "parser" ]; then
-#     gcc ../src/lexer/*.c ../src/ast/*.c ../src/parser/*.c ./unity.c ./test_ast_parser.c -o fla
-#     ./fla
-#     rm ./fla
-# elif [ "$arg" = "symbol_table" ]; then
-#     gcc ../src/symbol_table/symbol_table.c ./unity.c ./test_symbol_table.c -o fla
-#     ./fla
-#     rm ./fla
-# fi
 

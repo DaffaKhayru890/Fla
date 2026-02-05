@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
     ASTNode **params_node = NULL;
@@ -24,14 +25,14 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
     int params_count = 0;
     int params_capacity = 2;
 
-    params_node = ALLOCATE(ASTNode**, params_capacity + 1);
+    params_node = ALLOCATE(ASTNode*, params_capacity);
 
     while(p->current.type != TOK_RPAREN && p->current.type != TOK_EOF) {
         char *param_identifier = NULL;
         char *param_type = NULL;
 
         if(match(p, TOK_IDENTIFIER)) {
-            param_identifier = strdup(p, p->current.lexeme);
+            param_identifier = strdup(p->current.lexeme);
         }
 
         eatToken(p, l, TOK_IDENTIFIER);
@@ -40,28 +41,33 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
         switch(p->current.type) {
             case TOK_TYPE_INT:
                 param_type = strdup("int");
+                eatToken(p,l,TOK_TYPE_INT);
             break;
 
             case TOK_TYPE_DOUBLE:
                 param_type = strdup("double");
+                eatToken(p,l,TOK_TYPE_DOUBLE);
             break;
 
             case TOK_TYPE_CHAR:
                 param_type = strdup("char");
+                eatToken(p,l,TOK_TYPE_CHAR);
             break;
 
             case TOK_TYPE_STRING:
                 param_type = strdup("string");
+                eatToken(p,l,TOK_TYPE_STRING);
             break;
 
             case TOK_TYPE_BOOLEAN:
                 param_type = strdup("boolean");
+                eatToken(p,l,TOK_TYPE_BOOLEAN);
             break;
         }
 
         if(params_count >= params_capacity) {
             params_capacity = params_capacity * 2;
-            params_node = GROW(ASTNode*, params_node, params_capacity);
+            params_node = (ASTNode**)GROW(ASTNode*, params_node, params_capacity);
         }
 
         ASTNode *param_node = NULL;
@@ -80,20 +86,34 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
 
     eatToken(p, l, TOK_RPAREN);
     eatToken(p, l, TOK_RARROW);
+
+    switch(p->current.type) {
+        case TOK_TYPE_INT:
+            func_return_type = strdup(p->current.lexeme);
+            eatToken(p,l,TOK_TYPE_INT);
+        break;
+    }
+
     eatToken(p, l, TOK_LBRACE);
 
-    createFuncDeclNode(&func_decl_node, func_identifier, func_return_type);
+    createFuncDeclNode(&func_decl_node, func_identifier, func_return_type, params_count);
 
     eatToken(p, l, TOK_RBRACE);
 
     FREE(func_identifier);
     FREE(func_return_type);
 
+    // eatToken(p, l, TOK_EOF);
+
     return func_decl_node;
 }
 
 ASTNode *parseReturn(Parser *p, Lexer *l);
-ASTNode *parseBlock(Parser *p, Lexer *l);
+
+ASTNode *parseBlock(Parser *p, Lexer *l) {
+
+}
+
 ASTNode *parseVarDecl(Parser *p, Lexer *l);
 ASTNode *parseIf(Parser *p, Lexer *l);
 ASTNode *parseWhile(Parser *p, Lexer *l);

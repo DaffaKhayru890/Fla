@@ -30,7 +30,7 @@ typedef struct {
 typedef struct {
     int elseif_count;
     ASTNode *condition;     
-    ASTNode **then_branch;   
+    ASTNode **elseif_branch;   
     ASTNode *else_branch;   
 }If;
 

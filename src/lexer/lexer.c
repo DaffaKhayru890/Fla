@@ -313,7 +313,12 @@ Token getNextToken(Lexer *l) {
         case '*': return createToken(l, "*", TOK_MULTIPLY); break;
         case '/': return createToken(l, "/", TOK_DIVISION); break;
         
-        
+        case '\0':
+            token.type = TOK_EOF;
+            token.lexeme[0] = '\0';
+
+            return token;
+        break;
     }
 
     token.type = TOK_ERROR;

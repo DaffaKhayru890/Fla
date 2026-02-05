@@ -11,7 +11,7 @@
     (freeMemory(pointer))
 
 #define GROW(type, pointer, newCapacity) \
-    ((type*)reallocate((pointer), (sizeof(type) * (newCapacity))))
+    ((type)reallocate((pointer), (sizeof(type) * (newCapacity))))
 
 void *allocate(void *pointer, size_t size);
 void *reallocate(void *pointer, size_t new_size);
