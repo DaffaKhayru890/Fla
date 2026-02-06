@@ -131,6 +131,7 @@ static Token scanKeyword(Lexer *l) {
 
     if(strcmp(token.lexeme, "use") == 0) return createToken(l, "use", TOK_KEY_USE);
     if(strcmp(token.lexeme, "fun") == 0) return createToken(l, "fun", TOK_KEY_FUN);
+    if(strcmp(token.lexeme, "return") == 0) return createToken(l, "return", TOK_KEY_RETURN);
     if(strcmp(token.lexeme, "var") == 0) return createToken(l, "var", TOK_KEY_VAR);
     if(strcmp(token.lexeme, "const") == 0) return createToken(l, "const", TOK_KEY_CONST);
     if(strcmp(token.lexeme, "if") == 0) return createToken(l, "if", TOK_KEY_IF);
@@ -189,6 +190,46 @@ static Token scanChar(Lexer *l) {
 
     token.lexeme[posLexeme] = '\0';
     token.type = TOK_CHAR;
+
+    return token;
+}
+
+static Token scanString(Lexer *l) {
+    if(isAtEnd(l)) {
+        Token token;
+
+        token.lexeme[0] = '\0';
+        token.type = TOK_EOF;
+
+        return token;
+    }
+
+    if(l->current != '\"') {
+        Token token;
+
+        token.type = TOK_ERROR;
+
+        return token;
+    };
+
+    Token token;
+
+    int posLexeme = 0;
+
+    advanced(l);
+
+    while(!isAtEnd(l) && l->current != '\"' && posLexeme < MAX_LITERAL - 1) {
+        token.lexeme[posLexeme] = l->current;
+
+        advanced(l);
+
+        posLexeme++;
+    }
+
+    advanced(l);
+
+    token.lexeme[posLexeme] = '\0';
+    token.type = TOK_STRING;
 
     return token;
 }
@@ -287,6 +328,10 @@ Token getNextToken(Lexer *l) {
 
     if(peek(l) == '\'') {
         return scanChar(l);
+    }
+
+    if(peek(l) == '\"') {
+        return scanString(l);
     }
 
     if(isdigit(peek(l))) {

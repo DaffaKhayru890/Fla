@@ -9,6 +9,7 @@ typedef enum {
     LITERAL_DOUBLE,
     LITERAL_FLOAT,
     LITERAL_CHAR,
+    LITERAL_STRING,
 }LiteralType;
 
 typedef struct {
@@ -18,6 +19,7 @@ typedef struct {
         float *float_value;
         double *double_value;
         char *char_value;
+        char *string_value;
     };
 }Literal;
 

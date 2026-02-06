@@ -28,6 +28,7 @@ const char* node_type_to_string(NodeType type) {
         case NODE_COMPOUND_EXPRESSION: return "Compound";
         case NODE_FUNCTION_CALL_EXPRESSION: return "FunctionCall";
         case NODE_LITERAL_EXPRESSION: return "Literal";
+        case NODE_ARGUMENT: return "Argument";
         default: return "Unknown";
     }
 }
@@ -58,14 +59,11 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
         break;
             
         case NODE_VARIABLE_DECLARATION:
-            printf(" [name: %s, type: %s]",
+            printf(" [name: %s, type: %s, isConst: %s]",
                 node->variable_declaration.identifier,
-                node->variable_declaration.type
+                node->variable_declaration.type,
+                node->variable_declaration.is_const ? "true" : "false"
             );
-        break;
-            
-        case NODE_IDENTIFIER_EXPRESSION:
-            printf(" [name: %s]", node->identifier.name);
         break;
             
         case NODE_BINARY_EXPRESSION:
@@ -77,6 +75,13 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
         break;
             
         case NODE_FUNCTION_CALL_EXPRESSION:
+            printf(" [name: %s, args: %d]",
+                node->function_call.function_name,
+                node->function_call.arg_count
+            );
+        break;
+
+        case NODE_ARGUMENT:
             printf(" [name: %s, args: %d]",
                 node->function_call.function_name,
                 node->function_call.arg_count
@@ -95,6 +100,10 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
                 break;
                 case LITERAL_CHAR:
                     printf("char: '%c'", *node->literal.char_value);
+                break;
+
+                case LITERAL_STRING:  
+                    printf("string: \"%s\"", node->literal.string_value);
                 break;
             }
 
@@ -177,8 +186,8 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
         break;
             
         case NODE_RETURN_STATEMENT:
-            if (node->return_function.return_value) {
-                print_ast_tree(node->return_function.return_value, new_prefix, true);
+            if (node->return_function.expression) {
+                print_ast_tree(node->return_function.expression, new_prefix, true);
             }
         break;
             
@@ -271,6 +280,12 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
                 }
             }
             break;
+
+        case NODE_ARGUMENT:
+            if(node->argument.literal) {
+                print_ast_tree(node->argument.literal, new_prefix, true);
+            }
+            break;
     }
 }
 
@@ -288,7 +303,7 @@ int main() {
 
     ASTNode *program = parseProgram(&parser, &lexer);
 
-    printf("%p", program->literal.char_value);
+    // printf("%p", program->literal.char_value);
 
     print_ast_tree(program, "", true);
 

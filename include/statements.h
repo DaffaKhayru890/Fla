@@ -3,6 +3,7 @@
 
 #include "./node.h"
 #include "./literal.h"
+#include <stdbool.h>
 
 typedef struct {
     char *identifier;
@@ -13,7 +14,7 @@ typedef struct {
 }FunctionDeclaration;
 
 typedef struct {
-    ASTNode *return_value;
+    ASTNode *expression;
 }Return;
 
 typedef struct {
@@ -25,6 +26,7 @@ typedef struct {
     char *identifier;
     char *type;
     ASTNode *init;
+    bool is_const;
 }VariableDeclaration;
 
 typedef struct {

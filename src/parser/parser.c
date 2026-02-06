@@ -117,6 +117,22 @@ void eatToken(Parser *p, Lexer *l, TokenType type) {
     advanced(p, l);
 }
 
+bool hasReturnStatment(ASTNode *block) {
+    if(!block || block->node_type != NODE_BLOCK_STATEMENT) return false;
+
+    for(int i = 0; i < block->block_statement.statements_count; i++) {
+        ASTNode *statement = block->block_statement.statements;
+
+        if(!statement) continue;
+        
+        if(statement->node_type == TOK_KEY_RETURN) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 // ================================ Main parser ================================ 
 
 void createParser(Parser *p, Lexer *l) {

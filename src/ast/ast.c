@@ -39,9 +39,23 @@ static void freeLiteralNode(ASTNode *node) {
 
     switch(node->literal.literal_type) {
         case LITERAL_INT:
+            freeAtr((void**)&node->literal.int_value);
+        break;
+
         case LITERAL_DOUBLE:
+            freeAtr((void**)&node->literal.double_value);
+        break;
+
         case LITERAL_FLOAT:
+            freeAtr((void**)&node->literal.float_value);
+        break;
+
         case LITERAL_CHAR:
+            freeAtr((void**)&node->literal.char_value);
+        break;
+
+        case LITERAL_STRING:
+            freeAtr((void**)&node->literal.string_value);
         break;
     }
 }
@@ -58,11 +72,12 @@ void freeAstNode(ASTNode *node, bool freeSelf) {
         case NODE_FUNCTION_DECLARATION:
             freeAtr((void **)&node->function_delcaration.identifier);
             freeAtr((void **)&node->function_delcaration.return_type);
+            freeNode(&node->function_delcaration.body);
             freeArrayNode(&node->function_delcaration.parameters);
         break;
 
         case NODE_RETURN_STATEMENT:
-            freeNode(&node->return_function.return_value);
+            freeNode(&node->return_function.expression);
         break;
 
         case NODE_BLOCK_STATEMENT:
@@ -103,10 +118,6 @@ void freeAstNode(ASTNode *node, bool freeSelf) {
             freeArrayNode(&node->switch_statement.body);
         break;
 
-        case NODE_IDENTIFIER_EXPRESSION:
-            freeAtr((void **)&node->identifier.name);
-        break;
-
         case NODE_BINARY_EXPRESSION:
             freeAtr((void **)&node->binary.op);
             freeNode(&node->binary.left);
@@ -138,10 +149,6 @@ void freeAstNode(ASTNode *node, bool freeSelf) {
         break;
 
         case NODE_LITERAL_EXPRESSION:
-            freeAtr((void*)&node->literal.char_value);
-            freeAtr((void*)&node->literal.float_value);
-            freeAtr((void*)&node->literal.int_value);
-            freeAtr((void*)&node->literal.double_value);
             freeLiteralNode(node);
         break;
     }
@@ -190,7 +197,7 @@ void createReturnNode(ASTNode **handle_node) {
     *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
 
     (*handle_node)->node_type = NODE_RETURN_STATEMENT;
-    (*handle_node)->return_function.return_value = NULL;
+    (*handle_node)->return_function.expression = NULL;
 }
 
 void createBlockNode(ASTNode **handle_node, int statements_count) {
@@ -201,13 +208,14 @@ void createBlockNode(ASTNode **handle_node, int statements_count) {
     (*handle_node)->block_statement.statements_count = statements_count;
 }
 
-void createVarDeclNode(ASTNode **handle_node, char *identifier, char *type) {
+void createVarDeclNode(ASTNode **handle_node, char *identifier, char *type, bool is_const) {
     *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
 
     (*handle_node)->node_type = NODE_VARIABLE_DECLARATION;
     (*handle_node)->variable_declaration.identifier = strdup(identifier);
     (*handle_node)->variable_declaration.type = strdup(type);
     (*handle_node)->variable_declaration.init = NULL;
+    (*handle_node)->variable_declaration.is_const = is_const;
 }
 
 void createIfNode(ASTNode **handle_node, int elseif_count) {
@@ -261,13 +269,6 @@ void createSwitchNode(ASTNode **handle_node, int case_count) {
 
 // ============================== Expression node ==============================
 
-void createIdentifierNode(ASTNode **handle_node, char *name) {
-    *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
-
-    (*handle_node)->node_type = NODE_IDENTIFIER_EXPRESSION;
-    (*handle_node)->identifier.name = strdup(name);
-}
-
 void createBinaryNode(ASTNode **handle_node, char *op) {
     *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
 
@@ -310,13 +311,19 @@ void createCompoundNode(ASTNode **handle_node, int count, int capacity) {
     (*handle_node)->compound.body = NULL;
 }
 
-void createFunctionCallNode(ASTNode **handle_node, char *function_name, int arg_count, int arg_capacity) {
+void createFunctionCallNode(ASTNode **handle_node, int arg_count) {
     *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
 
     (*handle_node)->node_type = NODE_FUNCTION_CALL_EXPRESSION;
-    (*handle_node)->function_call.function_name = strdup(function_name);
     (*handle_node)->function_call.arg_count = arg_count;
     (*handle_node)->function_call.arguments = NULL;
+}
+
+void createArgumentNode(ASTNode **handle_node) {
+    *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
+
+    (*handle_node)->node_type = NODE_ARGUMENT;
+    (*handle_node)->argument.literal = NULL;
 }
 
 void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, void *value) {
@@ -340,6 +347,10 @@ void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, void *va
 
         case LITERAL_CHAR:
             (*handle_node)->literal.char_value = value;
+        break;
+
+        case LITERAL_STRING:
+            (*handle_node)->literal.string_value = value;
         break;
     }
 

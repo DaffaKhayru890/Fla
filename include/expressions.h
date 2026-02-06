@@ -5,10 +5,6 @@
 #include "./literal.h"
 
 typedef struct {
-    char *name;
-}Identifier;
-
-typedef struct {
     char *op;
     ASTNode *left;
     ASTNode *right;
@@ -40,5 +36,9 @@ typedef struct {
     ASTNode **arguments;     
     int arg_count;
 }FunctionCall;
+
+typedef struct {
+    ASTNode *literal;
+}Argument;
 
 #endif

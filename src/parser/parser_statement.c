@@ -102,15 +102,15 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
 
     func_decl_node->function_delcaration.parameters = params_node;
 
-    free(func_identifier);
-    free(func_return_type);
+    
 
     func_decl_node->function_delcaration.body = parseBlock(p, l);
 
+    free(func_identifier);
+free(func_return_type);
+
     return func_decl_node;
 }
-
-ASTNode *parseReturn(Parser *p, Lexer *l);
 
 ASTNode *parseBlock(Parser *p, Lexer *l) {
     int statements_count = 0;
@@ -126,8 +126,20 @@ ASTNode *parseBlock(Parser *p, Lexer *l) {
         ASTNode *statement_node = NULL;
         
         switch(p->current.type) {
+            case TOK_IDENTIFIER:
+                statement_node = parserFunctionCall(p,l);
+            break;
+
             case TOK_KEY_VAR:
                 statement_node = parseVarDecl(p,l);
+            break;
+
+            case TOK_KEY_CONST:
+                statement_node = parseVarDecl(p,l);
+            break;
+
+            case TOK_KEY_RETURN:
+                statement_node = parseReturn(p,l);
             break;
         }
 
@@ -153,9 +165,16 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
     ASTNode *var_decl_node = NULL;
     char *var_identifier = NULL;
     char *var_type = NULL;
+    bool is_const = false;
 
-    eatToken(p,l,TOK_KEY_VAR);
-
+    if(match(p, TOK_KEY_VAR)) {
+        eatToken(p,l,TOK_KEY_VAR);
+        is_const = false;
+    }else if(match(p, TOK_KEY_CONST)) {
+        eatToken(p,l,TOK_KEY_CONST);
+        is_const = true;
+    }
+    
     if(match(p, TOK_IDENTIFIER)) {
         var_identifier = strdup(p->current.lexeme);
     }
@@ -177,21 +196,50 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
         eatToken(p,l,TOK_TYPE_FLOAT);
     }
 
-    eatToken(p,l,TOK_ASSIGNMENT);
-
-    createVarDeclNode(&var_decl_node, var_identifier, var_type);
-
+    createVarDeclNode(&var_decl_node, var_identifier, var_type, is_const);
+    
     free(var_identifier);
     free(var_type);
 
-    var_decl_node->variable_declaration.init = parseLiteral(p,l);
+    if(match(p, TOK_SEMICOLON)) {
+        eatToken(p,l,TOK_SEMICOLON);
+        
+        var_decl_node->variable_declaration.init = NULL;
 
-    eatToken(p,l,TOK_SEMICOLON);
+        if(is_const) {
+            fprintf(stderr, "Error: const variable must be initialized\n");
+            exit(EXIT_FAILURE);
+        }
 
-    return var_decl_node;
+        return var_decl_node;
+    }else {
+        eatToken(p,l,TOK_ASSIGNMENT);
+        var_decl_node->variable_declaration.init = parseLiteral(p,l);
+        eatToken(p,l,TOK_SEMICOLON);
+        return var_decl_node;
+    }
 }
 
 ASTNode *parseIf(Parser *p, Lexer *l);
 ASTNode *parseWhile(Parser *p, Lexer *l);
 ASTNode *parseFor(Parser *p, Lexer *l);
 ASTNode *parseSwitch(Parser *p, Lexer *l);
+
+ASTNode *parseReturn(Parser *p, Lexer *l) {
+    ASTNode *return_node = NULL;
+    ASTNode *literal_node = NULL;
+
+    createReturnNode(&return_node);
+
+    eatToken(p,l,TOK_KEY_RETURN);
+
+    return_node->return_function.expression = (ASTNode*)malloc(sizeof(ASTNode));
+    
+    literal_node = parseLiteral(p,l);
+
+    return_node->return_function.expression = literal_node;
+
+    eatToken(p,l,TOK_SEMICOLON);
+
+    return return_node;
+}

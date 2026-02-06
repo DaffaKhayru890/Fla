@@ -65,8 +65,26 @@ void test_identifier(void) {
     }
 } 
 
-void test_string(void) {
+void test_char(void) {
     char *source = "\'h\'";
+
+    Lexer lexer;
+    Token token;
+
+    createLexer(&lexer, source);
+
+    printf("Lexer created, current: %c, pos: %d\n", lexer.current, lexer.pos);
+
+    token = getNextToken(&lexer);
+    
+    printf("Token received, type: %d, lexeme: %s\n", token.type, token.lexeme);
+
+    TEST_ASSERT_EQUAL(TOK_CHAR, token.type);
+    TEST_ASSERT_EQUAL_STRING('h', token.lexeme);
+}
+
+void test_string(void) {
+    char *source = "\"h\"";
 
     Lexer lexer;
     Token token;
@@ -75,8 +93,8 @@ void test_string(void) {
 
     token = getNextToken(&lexer);
     
-    TEST_ASSERT_EQUAL(TOK_CHAR, token.type);
-    TEST_ASSERT_EQUAL_STRING("\'h\'", token.lexeme);
+    TEST_ASSERT_EQUAL(TOK_STRING, token.type);
+    TEST_ASSERT_EQUAL_STRING("h", token.lexeme);
 }
 
 void test_number(void) {
@@ -157,6 +175,7 @@ int main(void) {
     RUN_TEST(test_keyword);
     RUN_TEST(test_identifier);
     RUN_TEST(test_number);
+    RUN_TEST(test_char);
     RUN_TEST(test_string);
     RUN_TEST(test_operators);
 

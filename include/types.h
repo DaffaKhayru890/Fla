@@ -5,6 +5,7 @@ typedef enum {
     // base keyword
     TOK_KEY_USE,
     TOK_KEY_FUN,
+    TOK_KEY_RETURN,
     TOK_KEY_VAR,
     TOK_KEY_CONST,
     TOK_KEY_IF,
@@ -78,6 +79,7 @@ typedef enum {
     TOK_STRING,
     TOK_CHAR,
     TOK_INT,
+    TOK_FLOAT,
     TOK_DOUBLE,
     TOK_BOOLEAN,
 
