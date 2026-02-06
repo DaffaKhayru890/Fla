@@ -90,6 +90,11 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
             eatToken(p,l,TOK_TYPE_INT);
         break;
 
+        case TOK_TYPE_DOUBLE:
+            return_type = RETURN_TYPE_DOUBLE;
+            eatToken(p,l,TOK_TYPE_DOUBLE);
+        break;
+
         case TOK_TYPE_VOID:
             return_type = RETURN_TYPE_VOID;
             eatToken(p,l,TOK_TYPE_VOID);
@@ -222,10 +227,17 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
 
         return var_decl_node;
     }else {
-        eatToken(p,l,TOK_ASSIGNMENT);
-        var_decl_node->variable_declaration.init = parseExpression(p,l,PREC_NONE);
-        eatToken(p,l,TOK_SEMICOLON);
-        return var_decl_node;
+        if(p->next.type == TOK_IDENTIFIER) {
+            eatToken(p,l,TOK_ASSIGNMENT);
+            var_decl_node->variable_declaration.init = parserVariableCall(p,l);
+            eatToken(p,l,TOK_SEMICOLON);
+            return var_decl_node;
+        }else {
+            eatToken(p,l,TOK_ASSIGNMENT);
+            var_decl_node->variable_declaration.init = parseExpression(p,l,PREC_NONE);
+            eatToken(p,l,TOK_SEMICOLON);
+            return var_decl_node;
+        }
     }
 }
 

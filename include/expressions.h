@@ -13,6 +13,7 @@ typedef struct {
 typedef struct {
     char *op;
     ASTNode *operand;
+    bool is_postfix;
 }Unary;
 
 typedef struct {
@@ -37,14 +38,9 @@ typedef struct {
     int arg_count;
 }FunctionCall;
 
-typedef struct {
-    ASTNode *literal;
-    int arg_count;  
-}Argument;
+typedef struct  {
+    char *identifier;    
+}VariableCall;
 
-typedef struct {
-    char *identifier;
-    ASTNode *value;
-}Assignment;
 
 #endif

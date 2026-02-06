@@ -6,16 +6,17 @@
 
 typedef enum {
     PREC_NONE,
-    PREC_ASSIGNMENT,  // =
-    PREC_TERNARY,     // ? :
-    PREC_OR,          // ||
-    PREC_AND,         // &&
-    PREC_EQUALITY,    // == !=
-    PREC_COMPARISON,  // < > <= >=
-    PREC_ADDITIVE,    // + -
+    PREC_ASSIGNMENT,     // =
+    PREC_TERNARY,        // ? :
+    PREC_OR,             // ||
+    PREC_AND,            // &&
+    PREC_EQUALITY,       // == !=
+    PREC_COMPARISON,     // < > <= >=
+    PREC_ADDITIVE,       // + -
     PREC_MULTIPLICATIVE, // * / %
-    PREC_UNARY,       // ! - +
-    PREC_PRIMARY      // literals, identifiers
+    PREC_UNARY,          // ! - + ++ --
+    PREC_POSTFIX,        // x++ x--
+    PREC_PRIMARY         // literals, identifiers, grouping
 } Precedence;
 
 typedef struct {
@@ -41,8 +42,10 @@ ASTNode *parseReturn(Parser *p, Lexer *l);
 
 Precedence getPrecedence(TokenType type);
 ASTNode *parsePrimary(Parser *p, Lexer *l);
+ASTNode *parsePostfix(Parser *p, Lexer *l, ASTNode *left);
 ASTNode *parseExpression(Parser *p, Lexer *l, Precedence precedence);
 ASTNode *parserFunctionCall(Parser *p, Lexer *l);
+ASTNode *parserVariableCall(Parser *p, Lexer *l);
 ASTNode *parseLiteral(Parser *p, Lexer *l);
 
 ASTNode *parsePrimary(Parser *p, Lexer *l);

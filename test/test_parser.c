@@ -28,7 +28,7 @@ const char* node_type_to_string(NodeType type) {
         case NODE_COMPOUND_EXPRESSION: return "Compound";
         case NODE_FUNCTION_CALL_EXPRESSION: return "FunctionCall";
         case NODE_LITERAL_EXPRESSION: return "Literal";
-        case NODE_ARGUMENT: return "Argument";
+        case NODE_VARIABLE_CALL_EXPRESSION: return "VariableCall";
         default: return "Unknown";
     }
 }
@@ -87,6 +87,12 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
             printf(" [name: %s, args: %d]",
                 node->function_call.function_name,
                 node->function_call.arg_count
+            );
+        break;
+
+        case NODE_VARIABLE_CALL_EXPRESSION:
+            printf(" [name: %s]",
+                node->variable_call.identifier
             );
         break;
 
@@ -282,12 +288,6 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
                     print_ast_tree(node->switch_statement.body[i], new_prefix,
                                    node->switch_statement.body[i+1] == NULL);
                 }
-            }
-            break;
-
-        case NODE_ARGUMENT:
-            if(node->argument.literal) {
-                print_ast_tree(node->argument.literal, new_prefix, true);
             }
             break;
     }

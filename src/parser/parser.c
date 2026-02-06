@@ -127,14 +127,19 @@ char* getOperatorString(TokenType type) {
 
 Precedence getPrecedence(TokenType type) {
     switch(type) {
-        case TOK_PLUS:
-        case TOK_MINUS:
-            return PREC_ADDITIVE;
+        case TOK_ASSIGNMENT:
+        case TOK_ASSIGN_PLUS:
+        case TOK_ASSIGN_MINUS:
+        case TOK_ASSIGN_MULTIPLY:
+        case TOK_ASSIGN_DIVISION:
+        case TOK_ASSIGN_MODULO:
+            return PREC_ASSIGNMENT;
         
-        case TOK_MULTIPLY:
-        case TOK_DIVISION:
-        case TOK_MODULO:
-            return PREC_MULTIPLICATIVE;
+        case TOK_OP_OR:
+            return PREC_OR;
+        
+        case TOK_OP_AND:
+            return PREC_AND;
         
         case TOK_OP_EQ:
         case TOK_OP_NEQ:
@@ -145,6 +150,15 @@ Precedence getPrecedence(TokenType type) {
         case TOK_OP_GT:
         case TOK_OP_GTE:
             return PREC_COMPARISON;
+        
+        case TOK_PLUS:
+        case TOK_MINUS:
+            return PREC_ADDITIVE;
+        
+        case TOK_MULTIPLY:
+        case TOK_DIVISION:
+        case TOK_MODULO:
+            return PREC_MULTIPLICATIVE;
         
         default:
             return PREC_NONE;
@@ -232,8 +246,6 @@ ASTNode *parseModule(Parser *p, Lexer *l) {
     }
 
     moduleNode->module.body[count] = NULL;
-
-    // eatToken(p,l, TOK_EOF);
 
     return moduleNode;
 }

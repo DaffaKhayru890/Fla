@@ -151,6 +151,10 @@ void freeAstNode(ASTNode *node, bool freeSelf) {
         case NODE_LITERAL_EXPRESSION:
             freeLiteralNode(node);
         break;
+        
+        case NODE_VARIABLE_CALL_EXPRESSION:
+            freeAtr((void **)&node->variable_call.identifier);
+        break;
     }
 
     if(freeSelf) {
@@ -284,6 +288,7 @@ void createUnaryNode(ASTNode **handle_node, char *op) {
     (*handle_node)->node_type = NODE_UNARY_EXPRESSION;
     (*handle_node)->unary.op = strdup(op);
     (*handle_node)->unary.operand = NULL;
+    (*handle_node)->unary.is_postfix = false;
 }
 
 void createTenaryNode(ASTNode **handle_node) {
@@ -319,12 +324,11 @@ void createFunctionCallNode(ASTNode **handle_node, int arg_count) {
     (*handle_node)->function_call.arguments = NULL;
 }
 
-void createArgumentNode(ASTNode **handle_node, int arg_count) {
+void createVariableCall(ASTNode **handle_node, char *identifier) {
     *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
 
-    (*handle_node)->node_type = NODE_ARGUMENT;
-    (*handle_node)->argument.arg_count = arg_count; 
-    (*handle_node)->argument.literal = NULL;
+    (*handle_node)->node_type = NODE_VARIABLE_CALL_EXPRESSION;
+    (*handle_node)->variable_call.identifier = strdup(identifier);
 }
 
 void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, void *value) {
