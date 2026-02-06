@@ -208,14 +208,14 @@ void createBlockNode(ASTNode **handle_node, int statements_count) {
     (*handle_node)->block_statement.statements_count = statements_count;
 }
 
-void createVarDeclNode(ASTNode **handle_node, char *identifier, char *type, bool is_const) {
+void createVarDeclNode(ASTNode **handle_node, char *identifier, char *type, VarType variable_type) {
     *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
 
     (*handle_node)->node_type = NODE_VARIABLE_DECLARATION;
     (*handle_node)->variable_declaration.identifier = strdup(identifier);
     (*handle_node)->variable_declaration.type = strdup(type);
     (*handle_node)->variable_declaration.init = NULL;
-    (*handle_node)->variable_declaration.is_const = is_const;
+    (*handle_node)->variable_declaration.variable_type = variable_type;
 }
 
 void createIfNode(ASTNode **handle_node, int elseif_count) {

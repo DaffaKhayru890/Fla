@@ -57,7 +57,7 @@ void createParamNode(ASTNode **handle_node, char *name, char *type);
 void createFuncDeclNode(ASTNode **handle_node, char *identifier, char *return_type, int param_count);
 void createReturnNode(ASTNode **handle_node);
 void createBlockNode(ASTNode **handle_node, int statements_count);
-void createVarDeclNode(ASTNode **handle_node, char *identifier, char *type, bool is_const);
+void createVarDeclNode(ASTNode **handle_node, char *identifier, char *type, VarType variable_type);
 void createIfNode(ASTNode **handle_node, int elseif_count);
 void createWhileNode(ASTNode **handle_node);
 void createForNode(ASTNode **handle_node);

@@ -174,14 +174,15 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
     ASTNode *var_decl_node = NULL;
     char *var_identifier = NULL;
     char *var_type = NULL;
-    bool is_const = false;
+
+    VarType variable_type;
 
     if(match(p, TOK_KEY_VAR)) {
         eatToken(p,l,TOK_KEY_VAR);
-        is_const = false;
+        variable_type = VARIABLE_TYPE_VAR;
     }else if(match(p, TOK_KEY_CONST)) {
         eatToken(p,l,TOK_KEY_CONST);
-        is_const = true;
+        variable_type = VARIABLE_TYPE_CONST;
     }
     
     if(match(p, TOK_IDENTIFIER)) {
@@ -205,7 +206,7 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
         eatToken(p,l,TOK_TYPE_FLOAT);
     }
 
-    createVarDeclNode(&var_decl_node, var_identifier, var_type, is_const);
+    createVarDeclNode(&var_decl_node, var_identifier, var_type, variable_type);
     
     free(var_identifier);
     free(var_type);
@@ -215,7 +216,7 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
         
         var_decl_node->variable_declaration.init = NULL;
 
-        if(is_const) {
+        if(var_decl_node->variable_declaration.variable_type == VARIABLE_TYPE_CONST) {
             fprintf(stderr, "Error: const variable must be initialized\n");
             exit(EXIT_FAILURE);
         }

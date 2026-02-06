@@ -59,10 +59,9 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
         break;
             
         case NODE_VARIABLE_DECLARATION:
-            printf(" [name: %s, type: %s, isConst: %s]",
+            printf(" [name: %s, type: %s]",
                 node->variable_declaration.identifier,
-                node->variable_declaration.type,
-                node->variable_declaration.is_const ? "true" : "false"
+                node->variable_declaration.type
             );
         break;
             
