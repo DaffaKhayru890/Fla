@@ -121,11 +121,11 @@ bool hasReturnStatment(ASTNode *block) {
     if(!block || block->node_type != NODE_BLOCK_STATEMENT) return false;
 
     for(int i = 0; i < block->block_statement.statements_count; i++) {
-        ASTNode *statement = block->block_statement.statements;
+        ASTNode *statement = block->block_statement.statements[i];
 
         if(!statement) continue;
         
-        if(statement->node_type == TOK_KEY_RETURN) {
+        if(statement->node_type == NODE_RETURN_STATEMENT) {
             return true;
         }
     }

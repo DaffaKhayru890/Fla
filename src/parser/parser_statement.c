@@ -102,12 +102,21 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
 
     func_decl_node->function_delcaration.parameters = params_node;
 
-    
-
     func_decl_node->function_delcaration.body = parseBlock(p, l);
 
+    bool is_void = strcmp(func_return_type, "void") == 0;
+
+    if(!is_void) {
+        bool has_return = hasReturnStatment(func_decl_node->function_delcaration.body);
+
+        if(!has_return) {
+            fprintf(stderr, "Error: no return statement\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+
     free(func_identifier);
-free(func_return_type);
+    free(func_return_type);
 
     return func_decl_node;
 }
