@@ -39,6 +39,12 @@ typedef struct {
 
 typedef struct {
     ASTNode *literal;
+    int arg_count;  
 }Argument;
+
+typedef struct {
+    char *identifier;
+    ASTNode *value;
+}Assignment;
 
 #endif

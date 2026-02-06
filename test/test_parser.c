@@ -33,6 +33,16 @@ const char* node_type_to_string(NodeType type) {
     }
 }
 
+const char* return_type_to_string(ReturnType type) {
+     switch(type) {
+        case RETURN_TYPE_INT: return "int";
+        case RETURN_TYPE_DOUBLE: return "double";
+        case RETURN_TYPE_FLOAT: return "float";
+        case RETURN_TYPE_CHAR: return "char";
+        default: return "Unknown";
+    }
+}
+
 void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
     if (!node) return;
     
@@ -53,7 +63,7 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
         case NODE_FUNCTION_DECLARATION:
             printf(" [name: %s, return: %s, params: %d]",
                 node->function_delcaration.identifier,
-                node->function_delcaration.return_type,
+                return_type_to_string(node->function_delcaration.return_type),
                 node->function_delcaration.param_count
             );
         break;
@@ -80,11 +90,6 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
             );
         break;
 
-        case NODE_ARGUMENT:
-            printf(" [name: %s, args: %d]",
-                node->function_call.function_name,
-                node->function_call.arg_count
-            );
         break;
             
         case NODE_LITERAL_EXPRESSION:

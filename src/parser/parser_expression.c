@@ -82,7 +82,7 @@ ASTNode *parserFunctionCall(Parser *p, Lexer *l) {
             );
         }
 
-        createArgumentNode(&argument_node);
+        createArgumentNode(&argument_node, args_count);
         argument_node->argument.literal = literal_node;
 
         function_call_node->function_call.arguments[args_count] = argument_node;

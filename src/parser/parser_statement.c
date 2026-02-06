@@ -10,7 +10,7 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
     ASTNode *func_decl_node = NULL;
 
     char *func_identifier = NULL;
-    char *func_return_type = NULL;
+    ReturnType return_type;
 
     eatToken(p, l, TOK_KEY_FUN);
 
@@ -86,25 +86,25 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
 
     switch(p->current.type) {
         case TOK_TYPE_INT:
-            func_return_type = strdup(p->current.lexeme);
+            return_type = RETURN_TYPE_INT;
             eatToken(p,l,TOK_TYPE_INT);
         break;
 
         case TOK_TYPE_VOID:
-            func_return_type = strdup(p->current.lexeme);
+            return_type = RETURN_TYPE_VOID;
             eatToken(p,l,TOK_TYPE_VOID);
         break;
     }
 
     eatToken(p, l, TOK_LBRACE);
 
-    createFuncDeclNode(&func_decl_node, func_identifier, func_return_type, params_count);
+    createFuncDeclNode(&func_decl_node, func_identifier, return_type, params_count);
 
     func_decl_node->function_delcaration.parameters = params_node;
 
     func_decl_node->function_delcaration.body = parseBlock(p, l);
 
-    bool is_void = strcmp(func_return_type, "void") == 0;
+    bool is_void = return_type == RETURN_TYPE_VOID;
 
     if(!is_void) {
         bool has_return = hasReturnStatment(func_decl_node->function_delcaration.body);
@@ -116,7 +116,6 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
     }
 
     free(func_identifier);
-    free(func_return_type);
 
     return func_decl_node;
 }

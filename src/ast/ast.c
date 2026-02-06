@@ -174,12 +174,12 @@ void createModuleNode(ASTNode **handle_node, char *name) {
 
 // ================================= Statement node =================================
 
-void createFuncDeclNode(ASTNode **handle_node, char *identifier, char *return_type, int param_count) {
+void createFuncDeclNode(ASTNode **handle_node, char *identifier, ReturnType return_type, int param_count) {
     *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
 
     (*handle_node)->node_type = NODE_FUNCTION_DECLARATION;
     (*handle_node)->function_delcaration.identifier = strdup(identifier);
-    (*handle_node)->function_delcaration.return_type = strdup(return_type);
+    (*handle_node)->function_delcaration.return_type = return_type;
     (*handle_node)->function_delcaration.param_count = param_count;
     (*handle_node)->function_delcaration.body = NULL;
     (*handle_node)->function_delcaration.parameters = NULL;
@@ -319,10 +319,11 @@ void createFunctionCallNode(ASTNode **handle_node, int arg_count) {
     (*handle_node)->function_call.arguments = NULL;
 }
 
-void createArgumentNode(ASTNode **handle_node) {
+void createArgumentNode(ASTNode **handle_node, int arg_count) {
     *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
 
     (*handle_node)->node_type = NODE_ARGUMENT;
+    (*handle_node)->argument.arg_count = arg_count; 
     (*handle_node)->argument.literal = NULL;
 }
 
