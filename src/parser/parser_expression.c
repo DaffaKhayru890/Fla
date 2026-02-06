@@ -19,25 +19,29 @@ ASTNode *parsePrimary(Parser *p, Lexer *l) {
 }
 
 ASTNode *parseExpression(Parser *p, Lexer *l, Precedence precedence) {
-    ASTNode *left = parsePrimary(p,l);
+    ASTNode *expression = parsePrimary(p,l);
 
     while(precedence < getPrecedence(p->current.type)) {
         Precedence op = getPrecedence(p->current.type);
+
+        char *operator = strdup(p->current.lexeme);
 
         eatToken(p,l,p->current.type);
 
         ASTNode *right = parseExpression(p,l,op);
 
         ASTNode *binary_node = NULL;
-        createBinaryNode(&binary_node, p->current.lexeme);
+        createBinaryNode(&binary_node, operator);
 
-        binary_node->binary.left = left;
+        binary_node->binary.left = expression;
         binary_node->binary.right = right;
 
-        left = binary_node;
+        expression = binary_node;
+
+        free(operator);
     }
     
-    return left;
+    return expression;
 }
 
 ASTNode *parserFunctionCall(Parser *p, Lexer *l) {
