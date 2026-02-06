@@ -223,7 +223,7 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
         return var_decl_node;
     }else {
         eatToken(p,l,TOK_ASSIGNMENT);
-        var_decl_node->variable_declaration.init = parseLiteral(p,l);
+        var_decl_node->variable_declaration.init = parseExpression(p,l,PREC_NONE);
         eatToken(p,l,TOK_SEMICOLON);
         return var_decl_node;
     }

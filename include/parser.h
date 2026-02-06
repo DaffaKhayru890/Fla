@@ -4,6 +4,20 @@
 #include "./lexer.h"
 #include "./ast.h"
 
+typedef enum {
+    PREC_NONE,
+    PREC_ASSIGNMENT,  // =
+    PREC_TERNARY,     // ? :
+    PREC_OR,          // ||
+    PREC_AND,         // &&
+    PREC_EQUALITY,    // == !=
+    PREC_COMPARISON,  // < > <= >=
+    PREC_ADDITIVE,    // + -
+    PREC_MULTIPLICATIVE, // * / %
+    PREC_UNARY,       // ! - +
+    PREC_PRIMARY      // literals, identifiers
+} Precedence;
+
 typedef struct {
     Lexer *lexer;
     Token current;
@@ -25,13 +39,13 @@ ASTNode *parseFor(Parser *p, Lexer *l);
 ASTNode *parseSwitch(Parser *p, Lexer *l);
 ASTNode *parseReturn(Parser *p, Lexer *l);
 
-ASTNode *parseIdentifier(Parser *p, Lexer *l, char *name);
-ASTNode *parseBinary(Parser *p, Lexer *l, char *op);
-ASTNode *parseUnary(Parser *p, Lexer *l, char *op);
-ASTNode *parseTernary(Parser *p, Lexer *l);
-ASTNode *parseGrouping(Parser *p, Lexer *l);
+Precedence getPrecedence(TokenType type);
+ASTNode *parsePrimary(Parser *p, Lexer *l);
+ASTNode *parseExpression(Parser *p, Lexer *l, Precedence precedence);
 ASTNode *parserFunctionCall(Parser *p, Lexer *l);
 ASTNode *parseLiteral(Parser *p, Lexer *l);
+
+ASTNode *parsePrimary(Parser *p, Lexer *l);
 
 void advanced(Parser *p, Lexer *l);
 bool match(Parser *p, TokenType type);

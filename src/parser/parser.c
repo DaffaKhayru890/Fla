@@ -97,7 +97,59 @@ char *TokenTypeString[] = {
     "TOK_EOF"
 };
 
+char* getOperatorString(TokenType type) {
+    switch(type) {
+        case TOK_PLUS: return "+";
+        case TOK_MINUS: return "-";
+        case TOK_MULTIPLY: return "*";
+        case TOK_DIVISION: return "/";
+        case TOK_MODULO: return "%";
+        case TOK_EXPONENT: return "**";
+        case TOK_OP_EQ: return "==";
+        case TOK_OP_NEQ: return "!=";
+        case TOK_OP_LT: return "<";
+        case TOK_OP_LTE: return "<=";
+        case TOK_OP_GT: return ">";
+        case TOK_OP_GTE: return ">=";
+        case TOK_OP_AND: return "&&";
+        case TOK_OP_OR: return "||";
+        case TOK_ASSIGNMENT: return "=";
+        case TOK_ASSIGN_PLUS: return "+=";
+        case TOK_ASSIGN_MINUS: return "-=";
+        case TOK_ASSIGN_MULTIPLY: return "*=";
+        case TOK_ASSIGN_DIVISION: return "/=";
+        case TOK_ASSIGN_MODULO: return "%=";
+        default: return "UNKNOWN";
+    }
+}
+
 // =============================== Helper Function ===============================
+
+Precedence getPrecedence(TokenType type) {
+    switch(type) {
+        case TOK_PLUS:
+        case TOK_MINUS:
+            return PREC_ADDITIVE;
+        
+        case TOK_MULTIPLY:
+        case TOK_DIVISION:
+        case TOK_MODULO:
+            return PREC_MULTIPLICATIVE;
+        
+        case TOK_OP_EQ:
+        case TOK_OP_NEQ:
+            return PREC_EQUALITY;
+        
+        case TOK_OP_LT:
+        case TOK_OP_LTE:
+        case TOK_OP_GT:
+        case TOK_OP_GTE:
+            return PREC_COMPARISON;
+        
+        default:
+            return PREC_NONE;
+    }
+}
 
 void advanced(Parser *p, Lexer *l) {
     p->current = p->next;

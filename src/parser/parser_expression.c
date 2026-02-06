@@ -6,11 +6,39 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-ASTNode *parseIdentifier(Parser *p, Lexer *l, char *name);
-ASTNode *parseBinary(Parser *p, Lexer *l, char *op);
-ASTNode *parseUnary(Parser *p, Lexer *l, char *op);
-ASTNode *parseTernary(Parser *p, Lexer *l);
-ASTNode *parseGrouping(Parser *p, Lexer *l){}
+ASTNode *parsePrimary(Parser *p, Lexer *l) {
+    ASTNode *primary_node = NULL;
+
+    switch(p->current.type) {
+        case TOK_INT:
+            primary_node = parseLiteral(p,l);
+        break; 
+    }
+
+    return primary_node;
+}
+
+ASTNode *parseExpression(Parser *p, Lexer *l, Precedence precedence) {
+    ASTNode *left = parsePrimary(p,l);
+
+    while(precedence < getPrecedence(p->current.type)) {
+        Precedence op = getPrecedence(p->current.type);
+
+        eatToken(p,l,p->current.type);
+
+        ASTNode *right = parseExpression(p,l,op);
+
+        ASTNode *binary_node = NULL;
+        createBinaryNode(&binary_node, p->current.lexeme);
+
+        binary_node->binary.left = left;
+        binary_node->binary.right = right;
+
+        left = binary_node;
+    }
+    
+    return left;
+}
 
 ASTNode *parserFunctionCall(Parser *p, Lexer *l) {
     int args_count = 0;
