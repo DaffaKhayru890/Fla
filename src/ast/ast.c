@@ -155,6 +155,14 @@ void freeAstNode(ASTNode *node, bool freeSelf) {
         case NODE_IDENTIFIER_EXPRESSION:
             freeAtr((void **)&node->identifier.identifier);
         break;
+
+        case NODE_ARRAY:
+            freeArrayNode(&node->array.literal);
+        break;
+
+        case NODE_ASSIGNMENT:
+            freeNode(&node->assignment.expression);
+        break;
     }
 
     if(freeSelf) {
@@ -331,6 +339,22 @@ void createIdentifierNode(ASTNode **handle_node, char *identifier) {
     (*handle_node)->identifier.identifier = strdup(identifier);
 }
 
+void createArrayNode(ASTNode **handle_node, int literal_count) {
+    *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
+
+    (*handle_node)->node_type = NODE_ARRAY;
+    (*handle_node)->array.literal_count = literal_count;
+    (*handle_node)->array.literal = NULL;
+}
+
+void createAssignmentNode(ASTNode **handle_node) {
+    *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
+
+    (*handle_node)->node_type = NODE_ASSIGNMENT;
+    (*handle_node)->assignment.expression = NULL;
+    (*handle_node)->assignment.left = NULL;
+}
+
 void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, void *value) {
     *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
 
@@ -357,10 +381,5 @@ void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, void *va
         case LITERAL_STRING:
             (*handle_node)->literal.string_value = value;
         break;
-    }
-
-    
-    
-    
-    
+    } 
 }

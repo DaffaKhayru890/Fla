@@ -39,13 +39,15 @@ struct ASTNode {
         Switch switch_statement;
 
         Literal literal;
+        Identifier identifier;
         Binary binary;
         Unary unary;
         Ternary tenary;
         Grouping grouping;
         Compound compound;
         FunctionCall function_call;
-        Identifier identifier;
+        Array array;
+        Assignment assignment;
     };
 };
 
@@ -71,8 +73,10 @@ void createTenaryNode(ASTNode **handle_node);
 void createGroupingNode(ASTNode **handle_node);
 void createCompoundNode(ASTNode **handle_node, int count, int capacity);
 void createFunctionCallNode(ASTNode **handle_node, int arg_count);
-void createIdentifierNode(ASTNode **handle_node, char *identifier);
 void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, void *value);
+void createArrayNode(ASTNode **handle_node, int literal_count);
+void createAssignmentNode(ASTNode **handle_node);
+void createIdentifierNode(ASTNode **handle_node, char *identifier);
 
 bool hasReturnStatment(ASTNode *block);
 

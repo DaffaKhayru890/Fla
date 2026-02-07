@@ -23,6 +23,7 @@ typedef struct {
     Lexer *lexer;
     Token current;
     Token next;
+    Token nextNext;
 }Parser;
 
 void createParser(Parser *p, Lexer *l);
@@ -48,10 +49,11 @@ ASTNode *parsePrefix(Parser *p, Lexer *l);
 ASTNode *parsePostfix(Parser *p, Lexer *l, ASTNode *left);
 ASTNode *parseExpression(Parser *p, Lexer *l, Precedence min_precedence);
 ASTNode *parseFunctionCall(Parser *p, Lexer *l);
-ASTNode *parseIdentifier(Parser *p, Lexer *l);
+ASTNode *parseIdentifier(Parser *p, Lexer *l, void *identifier);
 ASTNode *parseLiteral(Parser *p, Lexer *l);
 
-ASTNode *parsePrimary(Parser *p, Lexer *l);
+ASTNode *parseArray(Parser *p, Lexer *l);
+ASTNode *parseAssignment(Parser *p, Lexer *l);
 
 void advanced(Parser *p, Lexer *l);
 bool match(Parser *p, TokenType type);

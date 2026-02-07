@@ -28,6 +28,8 @@ const char* node_type_to_string(NodeType type) {
         case NODE_COMPOUND_EXPRESSION: return "Compound";
         case NODE_FUNCTION_CALL_EXPRESSION: return "FunctionCall";
         case NODE_LITERAL_EXPRESSION: return "Literal";
+        case NODE_ARRAY: return "Array";
+        case NODE_ASSIGNMENT: return "Assignment";
         default: return "Unknown";
     }
 }
@@ -133,6 +135,14 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
             
         case NODE_COMPOUND_EXPRESSION:
             printf(" [count: %d]", node->compound.count);
+        break;
+
+        case NODE_ARRAY:
+            printf(" [literals count: %d]", node->array.literal_count);
+        break;
+
+        case NODE_ASSIGNMENT:
+            printf(" [left: %s]", node->assignment.left);
         break;
     }
     
@@ -284,11 +294,28 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
             print_ast_tree(node->switch_statement.expression, new_prefix, false);
             if (node->switch_statement.body) {
                 for (int i = 0; node->switch_statement.body[i] != NULL; i++) {
-                    print_ast_tree(node->switch_statement.body[i], new_prefix,
-                                   node->switch_statement.body[i+1] == NULL);
+                    print_ast_tree(
+                        node->switch_statement.body[i], new_prefix,
+                        node->switch_statement.body[i+1] == NULL
+                    );
                 }
             }
             break;
+        case NODE_ARRAY:
+            if(node->array.literal) {
+                for(int i = 0; i < node->array.literal_count; i++) {
+                    print_ast_tree(
+                        node->array.literal[i],
+                        new_prefix,
+                        i == node->array.literal_count - 1
+                    );
+                } 
+            }   
+        break;
+
+        case NODE_ASSIGNMENT:
+            print_ast_tree(node->assignment.expression, new_prefix, true);
+        break;
     }
 }
 

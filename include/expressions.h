@@ -11,6 +11,10 @@ typedef struct {
 }Binary;
 
 typedef struct {
+    char *identifier;
+}Identifier;
+
+typedef struct {
     char *op;
     ASTNode *operand;
     bool is_postfix;
@@ -38,9 +42,14 @@ typedef struct {
     int arg_count;
 }FunctionCall;
 
-typedef struct  {
-    char *identifier;    
-}Identifier;
+typedef struct {
+    int literal_count;
+    ASTNode **literal;
+}Array;
 
+typedef struct {
+    ASTNode *expression;
+    char *left;
+}Assignment;
 
 #endif

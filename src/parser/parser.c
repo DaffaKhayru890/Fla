@@ -174,7 +174,8 @@ Precedence getPrecedence(TokenType type) {
 
 void advanced(Parser *p, Lexer *l) {
     p->current = p->next;
-    p->next = getNextToken(l);
+    p->next = p->nextNext;
+    p->nextNext = getNextToken(l);
 }
 
 bool match(Parser *p, TokenType type) {
@@ -211,6 +212,7 @@ bool hasReturnStatment(ASTNode *block) {
 void createParser(Parser *p, Lexer *l) {
     p->current = getNextToken(l);
     p->next = getNextToken(l);
+    p->nextNext = getNextToken(l);
 }
 
 ASTNode *parseProgram(Parser *p, Lexer *l) {

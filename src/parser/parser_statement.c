@@ -140,7 +140,16 @@ ASTNode *parseBlock(Parser *p, Lexer *l) {
         
         switch(p->current.type) {
             case TOK_IDENTIFIER:
-                statement_node = parseFunctionCall(p,l);
+                if(p->next.type == TOK_LPAREN) {
+                    statement_node = parseFunctionCall(p,l);
+                    eatToken(p,l,TOK_SEMICOLON);
+                }else if(
+                    p->next.type == TOK_ASSIGNMENT ||
+                    p->next.type == TOK_ASSIGN_PLUS
+                ) {
+                    statement_node = parseAssignment(p,l);
+                    eatToken(p,l,TOK_SEMICOLON);
+                }
             break;
 
             case TOK_KEY_VAR:
@@ -195,23 +204,56 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
 
     switch(p->current.type) {
         case TOK_TYPE_INT:
-            var_type = strdup(p->current.lexeme);
-            eatToken(p,l,TOK_TYPE_INT);
+            if(p->next.type == TOK_LBRACKETS && p->nextNext.type == TOK_RBRACKETS) {
+                eatToken(p,l,TOK_TYPE_INT);
+                var_type = strdup("array int");
+                eatToken(p,l,TOK_LBRACKETS);
+                eatToken(p,l,TOK_RBRACKETS);
+            }else {
+                var_type = strdup(p->current.lexeme);
+                eatToken(p,l,TOK_TYPE_INT);
+            }
         break;
 
         case TOK_TYPE_DOUBLE:
-            var_type = strdup(p->current.lexeme);
-            eatToken(p,l,TOK_TYPE_DOUBLE);
+            if(p->next.type == TOK_LBRACKETS && p->nextNext.type == TOK_RBRACKETS) {
+                var_type = strdup("array int");
+                eatToken(p,l,TOK_LBRACKETS);
+                eatToken(p,l,TOK_RBRACKETS);
+            }else {
+                var_type = strdup(p->current.lexeme);
+                eatToken(p,l,TOK_TYPE_DOUBLE);
+            }
         break;
 
         case TOK_TYPE_FLOAT:
-            var_type = strdup(p->current.lexeme);
-            eatToken(p,l,TOK_TYPE_FLOAT);
+            if(p->next.type == TOK_LBRACKETS && p->nextNext.type == TOK_RBRACKETS) {
+                var_type = strdup("array int");
+                eatToken(p,l,TOK_LBRACKETS);
+                eatToken(p,l,TOK_RBRACKETS);
+            }else {
+                var_type = strdup(p->current.lexeme);
+                eatToken(p,l,TOK_TYPE_FLOAT);
+            }
         break;
 
         case TOK_TYPE_CHAR:
-            var_type = strdup(p->current.lexeme);
-            eatToken(p,l,TOK_TYPE_CHAR);
+            if(p->next.type == TOK_LBRACKETS && p->nextNext.type == TOK_RBRACKETS) {
+                var_type = strdup("array int");
+                eatToken(p,l,TOK_LBRACKETS);
+                eatToken(p,l,TOK_RBRACKETS);
+            }else {
+                var_type = strdup(p->current.lexeme);
+                eatToken(p,l,TOK_TYPE_CHAR);
+            }
+        break;
+
+        case TOK_LBRACKETS:
+            if(p->next.type == TOK_RBRACKETS) {
+                var_type = strdup("array");
+            }
+            eatToken(p,l,TOK_LBRACKETS);
+            eatToken(p,l,TOK_RBRACKETS);
         break;
     }
 
@@ -220,22 +262,33 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
     free(var_identifier);
     free(var_type);
 
-    if(match(p, TOK_SEMICOLON)) {
-        eatToken(p,l,TOK_SEMICOLON);
+    switch(p->current.type) {
+        case TOK_SEMICOLON:
+            eatToken(p,l,TOK_SEMICOLON);
         
-        var_decl_node->variable_declaration.init = NULL;
+            var_decl_node->variable_declaration.init = NULL;
 
-        if(var_decl_node->variable_declaration.variable_type == VARIABLE_TYPE_CONST) {
-            fprintf(stderr, "Error: const variable must be initialized\n");
-            exit(EXIT_FAILURE);
-        }
+            if(var_decl_node->variable_declaration.variable_type == VARIABLE_TYPE_CONST) {
+                fprintf(stderr, "Error: const variable must be initialized\n");
+                exit(EXIT_FAILURE);
+            }
 
-        return var_decl_node;
-    }else {
-        eatToken(p,l,TOK_ASSIGNMENT);
-        var_decl_node->variable_declaration.init = parseExpression(p,l,PREC_NONE);
-        eatToken(p,l,TOK_SEMICOLON);
-        return var_decl_node;
+            return var_decl_node;
+        break;
+
+        case TOK_ASSIGNMENT:
+            if(p->next.type == TOK_LBRACE) {
+                eatToken(p,l,TOK_ASSIGNMENT);
+                var_decl_node->variable_declaration.init = parseArray(p,l);
+                eatToken(p,l,TOK_SEMICOLON);
+                return var_decl_node;
+            }else {
+                eatToken(p,l,TOK_ASSIGNMENT);
+                var_decl_node->variable_declaration.init = parseExpression(p,l,PREC_NONE);
+                eatToken(p,l,TOK_SEMICOLON);
+                return var_decl_node;
+            }
+        break;
     }
 }
 
