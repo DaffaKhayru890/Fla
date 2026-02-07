@@ -45,7 +45,7 @@ struct ASTNode {
         Grouping grouping;
         Compound compound;
         FunctionCall function_call;
-        VariableCall variable_call;
+        Identifier identifier;
     };
 };
 
@@ -71,7 +71,7 @@ void createTenaryNode(ASTNode **handle_node);
 void createGroupingNode(ASTNode **handle_node);
 void createCompoundNode(ASTNode **handle_node, int count, int capacity);
 void createFunctionCallNode(ASTNode **handle_node, int arg_count);
-void createVariableCall(ASTNode **handle_node, char *identifier);
+void createIdentifierNode(ASTNode **handle_node, char *identifier);
 void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, void *value);
 
 bool hasReturnStatment(ASTNode *block);

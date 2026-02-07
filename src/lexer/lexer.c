@@ -361,13 +361,9 @@ Token getNextToken(Lexer *l) {
         case '-': return createToken(l, "-", TOK_MINUS); break;
         case '*': return createToken(l, "*", TOK_MULTIPLY); break;
         case '/': return createToken(l, "/", TOK_DIVISION); break;
-        
-        case '\0':
-            token.type = TOK_EOF;
-            token.lexeme[0] = '\0';
+        case '!': return createToken(l, "!", TOK_NOT); break;
 
-            return token;
-        break;
+        case '\0': return createToken(l,"\0", TOK_EOF); break;
     }
 
     token.type = TOK_ERROR;

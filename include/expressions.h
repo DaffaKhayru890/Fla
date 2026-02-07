@@ -40,7 +40,7 @@ typedef struct {
 
 typedef struct  {
     char *identifier;    
-}VariableCall;
+}Identifier;
 
 
 #endif

@@ -55,6 +55,7 @@ typedef enum {
     TOK_SEMICOLON,
     TOK_COLON,
     TOK_ASSIGNMENT,
+    TOK_NOT,
 
     // two chars
     TOK_RARROW,

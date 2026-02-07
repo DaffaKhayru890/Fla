@@ -1,5 +1,5 @@
 fun main() -> int {
-    var angka: int = ++1;
+    var angka: int = 3--;
 
     return 0;
 }

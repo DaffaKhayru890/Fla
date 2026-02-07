@@ -6,10 +6,11 @@
 #include <stdlib.h>
 #include "../../include/memory.h"
 
-char *TokenTypeString[] = {
+const char *TokenTypeString[] = {
     // base keyword
     "TOK_KEY_USE",
     "TOK_KEY_FUN",
+    "TOK_KEY_RETURN",
     "TOK_KEY_VAR",
     "TOK_KEY_CONST",
     "TOK_KEY_IF",
@@ -37,8 +38,8 @@ char *TokenTypeString[] = {
     "TOK_TYPE_INT",
     "TOK_TYPE_DOUBLE",
     "TOK_TYPE_CHAR",
-    "TOK_TYPE_STRING",
-    "TOK_TYPE_BOOLEAN",
+    "TOK_TYPE_FLOAT",
+    "TOK_TYPE_VOID",
 
     // basic operators
     "TOK_PLUS",
@@ -48,7 +49,7 @@ char *TokenTypeString[] = {
     "TOK_MODULO",
     "TOK_EXPONENT",
 
-    // condition
+    // condition 
     "TOK_OP_EQ",
     "TOK_OP_NEQ",
     "TOK_OP_LT",
@@ -88,6 +89,7 @@ char *TokenTypeString[] = {
     "TOK_STRING",
     "TOK_CHAR",
     "TOK_INT",
+    "TOK_FLOAT",
     "TOK_DOUBLE",
     "TOK_BOOLEAN",
 

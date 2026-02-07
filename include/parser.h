@@ -27,6 +27,8 @@ typedef struct {
 
 void createParser(Parser *p, Lexer *l);
 
+Precedence getPrecedence(TokenType type);
+
 ASTNode *parseProgram(Parser *p, Lexer *l);
 ASTNode *parseModule(Parser *p, Lexer *l);
 
@@ -40,12 +42,13 @@ ASTNode *parseFor(Parser *p, Lexer *l);
 ASTNode *parseSwitch(Parser *p, Lexer *l);
 ASTNode *parseReturn(Parser *p, Lexer *l);
 
-Precedence getPrecedence(TokenType type);
-ASTNode *parsePrimary(Parser *p, Lexer *l);
+ASTNode *parseAtom(Parser *p, Lexer *l);
+ASTNode *parseInfix(Parser *p, Lexer *l, ASTNode *left);
+ASTNode *parsePrefix(Parser *p, Lexer *l);
 ASTNode *parsePostfix(Parser *p, Lexer *l, ASTNode *left);
-ASTNode *parseExpression(Parser *p, Lexer *l, Precedence precedence);
-ASTNode *parserFunctionCall(Parser *p, Lexer *l);
-ASTNode *parserVariableCall(Parser *p, Lexer *l);
+ASTNode *parseExpression(Parser *p, Lexer *l, Precedence min_precedence);
+ASTNode *parseFunctionCall(Parser *p, Lexer *l);
+ASTNode *parseIdentifier(Parser *p, Lexer *l);
 ASTNode *parseLiteral(Parser *p, Lexer *l);
 
 ASTNode *parsePrimary(Parser *p, Lexer *l);

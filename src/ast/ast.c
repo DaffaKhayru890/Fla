@@ -152,8 +152,8 @@ void freeAstNode(ASTNode *node, bool freeSelf) {
             freeLiteralNode(node);
         break;
         
-        case NODE_VARIABLE_CALL_EXPRESSION:
-            freeAtr((void **)&node->variable_call.identifier);
+        case NODE_IDENTIFIER_EXPRESSION:
+            freeAtr((void **)&node->identifier.identifier);
         break;
     }
 
@@ -324,11 +324,11 @@ void createFunctionCallNode(ASTNode **handle_node, int arg_count) {
     (*handle_node)->function_call.arguments = NULL;
 }
 
-void createVariableCall(ASTNode **handle_node, char *identifier) {
+void createIdentifierNode(ASTNode **handle_node, char *identifier) {
     *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
 
-    (*handle_node)->node_type = NODE_VARIABLE_CALL_EXPRESSION;
-    (*handle_node)->variable_call.identifier = strdup(identifier);
+    (*handle_node)->node_type = NODE_IDENTIFIER_EXPRESSION;
+    (*handle_node)->identifier.identifier = strdup(identifier);
 }
 
 void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, void *value) {

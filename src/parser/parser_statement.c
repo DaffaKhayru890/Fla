@@ -140,7 +140,7 @@ ASTNode *parseBlock(Parser *p, Lexer *l) {
         
         switch(p->current.type) {
             case TOK_IDENTIFIER:
-                statement_node = parserFunctionCall(p,l);
+                statement_node = parseFunctionCall(p,l);
             break;
 
             case TOK_KEY_VAR:
@@ -196,18 +196,26 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
     eatToken(p,l,TOK_IDENTIFIER);
     eatToken(p,l,TOK_COLON);
 
-    if(match(p,TOK_TYPE_INT)) {
-        var_type = strdup(p->current.lexeme);
-        eatToken(p,l,TOK_TYPE_INT);
-    }else if(match(p,TOK_TYPE_DOUBLE)) {
-        var_type = strdup(p->current.lexeme);
-        eatToken(p,l,TOK_TYPE_DOUBLE);
-    }else if(match(p, TOK_TYPE_CHAR)) {
-        var_type = strdup(p->current.lexeme);
-        eatToken(p,l,TOK_TYPE_CHAR);
-    }else if(match(p, TOK_TYPE_FLOAT)) {
-        var_type = strdup(p->current.lexeme);
-        eatToken(p,l,TOK_TYPE_FLOAT);
+    switch(p->current.type) {
+        case TOK_TYPE_INT:
+            var_type = strdup(p->current.lexeme);
+            eatToken(p,l,TOK_TYPE_INT);
+        break;
+
+        case TOK_TYPE_DOUBLE:
+            var_type = strdup(p->current.lexeme);
+            eatToken(p,l,TOK_TYPE_DOUBLE);
+        break;
+
+        case TOK_TYPE_FLOAT:
+            var_type = strdup(p->current.lexeme);
+            eatToken(p,l,TOK_TYPE_FLOAT);
+        break;
+
+        case TOK_TYPE_CHAR:
+            var_type = strdup(p->current.lexeme);
+            eatToken(p,l,TOK_TYPE_CHAR);
+        break;
     }
 
     createVarDeclNode(&var_decl_node, var_identifier, var_type, variable_type);
@@ -227,17 +235,10 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
 
         return var_decl_node;
     }else {
-        if(p->next.type == TOK_IDENTIFIER) {
-            eatToken(p,l,TOK_ASSIGNMENT);
-            var_decl_node->variable_declaration.init = parserVariableCall(p,l);
-            eatToken(p,l,TOK_SEMICOLON);
-            return var_decl_node;
-        }else {
-            eatToken(p,l,TOK_ASSIGNMENT);
-            var_decl_node->variable_declaration.init = parseExpression(p,l,PREC_NONE);
-            eatToken(p,l,TOK_SEMICOLON);
-            return var_decl_node;
-        }
+        eatToken(p,l,TOK_ASSIGNMENT);
+        var_decl_node->variable_declaration.init = parseExpression(p,l,PREC_NONE);
+        eatToken(p,l,TOK_SEMICOLON);
+        return var_decl_node;
     }
 }
 

@@ -6,25 +6,72 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-ASTNode *parsePrimary(Parser *p, Lexer *l) {
-    ASTNode *primary_node = NULL;
-
+ASTNode *parseAtom(Parser *p, Lexer *l) {
     switch(p->current.type) {
         case TOK_INT:
         case TOK_DOUBLE:
         case TOK_FLOAT:
         case TOK_CHAR:
         case TOK_STRING:
-            primary_node = parseLiteral(p, l);
+            return parseLiteral(p,l);
         break;
 
-        case TOK_INCREMENT:
-        case TOK_DECREMENT:
-
+        case TOK_IDENTIFIER:
+            return parseIdentifier(p,l);
         break;
     }
+}
 
-    return primary_node;
+ASTNode *parseInfix(Parser *p, Lexer *l, ASTNode *left) {
+    char *op = strdup(p->current.lexeme);
+
+    Precedence prec = getPrecedence(p->current.type);
+
+    eatToken(p,l,p->current.type);
+
+    ASTNode *right = parseExpression(p,l,prec);
+
+    ASTNode *binary = NULL;
+
+    createBinaryNode(&binary, op);
+
+    binary->binary.right = right;
+    binary->binary.left = left;
+
+    free(op);
+
+    return binary;
+}
+
+ASTNode *parsePrefix(Parser *p, Lexer *l) {
+    switch(p->current.type) {
+        case TOK_INCREMENT:
+        case TOK_DECREMENT:
+        case TOK_MINUS:
+        case TOK_NOT: {
+            char *op = strdup(p->current.lexeme);
+
+            eatToken(p,l,p->current.type);
+
+            Precedence prec = getPrecedence(p->current.type);
+
+            ASTNode *operand = parseExpression(p,l,prec);
+
+            ASTNode *unary = NULL;
+
+            createUnaryNode(&unary, op);
+
+            unary->unary.operand = operand;
+            unary->unary.is_postfix = false;
+
+            free(op);
+
+            return unary;
+        }
+
+        default:
+            return parseAtom(p,l);
+    }
 }
 
 ASTNode *parsePostfix(Parser *p, Lexer *l, ASTNode *left) {
@@ -32,57 +79,45 @@ ASTNode *parsePostfix(Parser *p, Lexer *l, ASTNode *left) {
         case TOK_INCREMENT:
         case TOK_DECREMENT: {
             char *op = strdup(p->current.lexeme);
-            printf("hello");
-            eatToken(p, l, p->current.type);
 
-            ASTNode *postfix_node = NULL;
-            createUnaryNode(&postfix_node, op);
-            postfix_node->unary.operand = left;
-            postfix_node->unary.is_postfix = true;
+            eatToken(p,l,p->current.type);
+
+            ASTNode *unary = NULL;
+
+            createUnaryNode(&unary, op);
+
+            unary->unary.operand = left;
+            unary->unary.is_postfix = true;
 
             free(op);
-            return postfix_node;
-        }
 
-        default:
-            return left;
+            return unary;
+        }
     }
 }
 
-ASTNode *parseExpression(Parser *p, Lexer *l, Precedence precedence) {
-    ASTNode *left = parsePrimary(p,l);
+ASTNode *parseExpression(Parser *p, Lexer *l, Precedence min_precedence) {
+    ASTNode *left = parsePrefix(p,l);
 
-    printf("%s", p->current.lexeme);
+    if(!left) return NULL;
 
-    while(precedence < getPrecedence(p->current.type)) {
-        if(p->current.type == TOK_INCREMENT || p->current.type == TOK_DECREMENT) {
-            left = parsePostfix(p, l, left);
-            continue;
-        }
+    while(min_precedence < getPrecedence(p->current.type)) {
+        switch(p->current.type) {
+            case TOK_INCREMENT:
+            case TOK_DECREMENT: {
+                left = parsePostfix(p,l,left);
+                break;
+            }
 
-        Precedence op = getPrecedence(p->current.type);
-
-        char *operator = strdup(p->current.lexeme);
-
-        eatToken(p,l,p->current.type);
-
-        ASTNode *right = parseExpression(p,l,op);
-
-        ASTNode *binary_node = NULL;
-        createBinaryNode(&binary_node, operator);
-
-        binary_node->binary.left = left;
-        binary_node->binary.right = right;
-
-        left = binary_node;
-
-        free(operator);
+            default:
+                left = parseInfix(p,l,left);
+        }   
     }
-    
+
     return left;
 }
 
-ASTNode *parserFunctionCall(Parser *p, Lexer *l) {
+ASTNode *parseFunctionCall(Parser *p, Lexer *l) {
     int args_count = 0;
     int args_capacity = 4;
     char *function_call_name = NULL;
@@ -132,7 +167,7 @@ ASTNode *parserFunctionCall(Parser *p, Lexer *l) {
     function_call_node->function_call.arguments[args_count] = NULL;
     function_call_node->function_call.arg_count = args_count;
 
-    // free(function_call_name);
+    free(function_call_name);
 
     eatToken(p,l,TOK_RPAREN);
     eatToken(p,l,TOK_SEMICOLON);
@@ -140,60 +175,65 @@ ASTNode *parserFunctionCall(Parser *p, Lexer *l) {
     return function_call_node;
 }
 
-ASTNode *parserVariableCall(Parser *p, Lexer *l) {
-    ASTNode *variable_call_node = NULL;
-    char *variable_call_identifier = NULL;
+ASTNode *parseIdentifier(Parser *p, Lexer *l) {
+    ASTNode *identifier_node_node = NULL;
+    char *identifier_node_identifier = NULL;
 
     if(match(p, TOK_IDENTIFIER)) {
-        variable_call_identifier = strdup(p->current.lexeme);
+        identifier_node_identifier = strdup(p->current.lexeme);
     }
 
     eatToken(p,l, TOK_IDENTIFIER);
 
-    createVariableCall(&variable_call_node, variable_call_identifier);
+    createIdentifierNode(&identifier_node_node, identifier_node_identifier);
 
-    free(variable_call_identifier);
+    free(identifier_node_identifier);
 
-    return variable_call_node;
+    return identifier_node_node;
 }
 
 ASTNode *parseLiteral(Parser *p, Lexer *l) {
     ASTNode *literal_node = NULL;
 
     switch(p->current.type) {
-        case TOK_INT:
+        case TOK_INT: {
             int *int_value = (int*)malloc(sizeof(int));
             *int_value = atoi(p->current.lexeme);
             createLiteralNode(&literal_node, LITERAL_INT, int_value);
             eatToken(p,l,TOK_INT);
-        break;
+            break;
+        }
 
-        case TOK_DOUBLE:
+        case TOK_DOUBLE: {
             double *double_value = (double*)malloc(sizeof(double));
             *double_value = atof(p->current.lexeme);
             createLiteralNode(&literal_node, LITERAL_DOUBLE, double_value);
             eatToken(p,l,TOK_DOUBLE);
-        break;
+            break;
+        }
 
-        case TOK_FLOAT:
+        case TOK_FLOAT: {
             float *float_value = (float*)malloc(sizeof(float));
             *float_value = (float)atof(p->current.lexeme);
-            createLiteralNode(&literal_node, LITERAL_FLOAT, double_value);
-            eatToken(p,l,TOK_DOUBLE);
-        break;
-
-        case TOK_CHAR:
+            createLiteralNode(&literal_node, LITERAL_FLOAT, float_value);
+            eatToken(p,l,TOK_FLOAT);
+            break;
+        }
+            
+        case TOK_CHAR: {
             char *char_value = (char*)malloc(sizeof(char));
             *char_value = p->current.lexeme[0];
             createLiteralNode(&literal_node, LITERAL_CHAR, char_value);
             eatToken(p,l,TOK_CHAR);
-        break;
+            break;
+        }     
 
-        case TOK_STRING:
+        case TOK_STRING: {
             char *string_value = strdup(p->current.lexeme);
             createLiteralNode(&literal_node, LITERAL_STRING, string_value);
             eatToken(p,l,TOK_STRING);
-        break;
+            break;
+        }
     }
 
     return literal_node;
