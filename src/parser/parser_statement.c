@@ -144,9 +144,6 @@ ASTNode *parseBlock(Parser *p, Lexer *l) {
             break;
 
             case TOK_KEY_VAR:
-                statement_node = parseVarDecl(p,l);
-            break;
-
             case TOK_KEY_CONST:
                 statement_node = parseVarDecl(p,l);
             break;

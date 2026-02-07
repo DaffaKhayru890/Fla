@@ -65,6 +65,7 @@ const char *TokenTypeString[] = {
     "TOK_SEMICOLON",
     "TOK_COLON",
     "TOK_ASSIGNMENT",
+    "TOK_NOT",
 
     // two chars
     "TOK_RARROW",
@@ -161,6 +162,10 @@ Precedence getPrecedence(TokenType type) {
         case TOK_DIVISION:
         case TOK_MODULO:
             return PREC_MULTIPLICATIVE;
+
+        case TOK_INCREMENT:
+        case TOK_DECREMENT:
+            return PREC_POSTFIX;
         
         default:
             return PREC_NONE;
