@@ -15,6 +15,8 @@ ASTNode *parseAtom(Parser *p, Lexer *l) {
         case TOK_FLOAT:
         case TOK_CHAR:
         case TOK_STRING:
+        case TOK_KEY_TRUE:
+        case TOK_KEY_FALSE:
             atom = parseLiteral(p,l);
         break;
 
@@ -255,6 +257,21 @@ ASTNode *parseLiteral(Parser *p, Lexer *l) {
             char *string_value = strdup(p->current.lexeme);
             createLiteralNode(&literal_node, LITERAL_STRING, string_value);
             eatToken(p,l,TOK_STRING);
+            break;
+        }
+
+        case TOK_KEY_TRUE:
+        case TOK_KEY_FALSE: {
+            bool *boolean_value = (bool*)malloc(sizeof(bool));
+            *boolean_value = p->current.type == TOK_KEY_TRUE ? true : false;
+            createLiteralNode(&literal_node, LITERAL_BOOLEAN, boolean_value);
+            
+            if(match(p, TOK_KEY_TRUE)) {
+                eatToken(p,l,TOK_KEY_TRUE);
+            }else {
+                eatToken(p,l,TOK_KEY_FALSE);
+            }
+            
             break;
         }
     }

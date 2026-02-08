@@ -34,16 +34,6 @@ const char* node_type_to_string(NodeType type) {
     }
 }
 
-const char* return_type_to_string(ReturnType type) {
-     switch(type) {
-        case RETURN_TYPE_INT: return "int";
-        case RETURN_TYPE_DOUBLE: return "double";
-        case RETURN_TYPE_FLOAT: return "float";
-        case RETURN_TYPE_CHAR: return "char";
-        default: return "Unknown";
-    }
-}
-
 void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
     if (!node) return;
     
@@ -64,7 +54,7 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
         case NODE_FUNCTION_DECLARATION:
             printf(" [name: %s, return: %s, params: %d]",
                 node->function_delcaration.identifier,
-                return_type_to_string(node->function_delcaration.return_type),
+                node->function_delcaration.return_type,
                 node->function_delcaration.param_count
             );
         break;
@@ -106,15 +96,25 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
                 case LITERAL_INT:
                     printf("int: %d", *node->literal.int_value);
                 break;
+                
                 case LITERAL_DOUBLE:
                     printf("double: %f", *node->literal.double_value);
                 break;
+                
+                case LITERAL_FLOAT:
+                    printf("float: %f", *node->literal.float_value);
+                break;
+                
                 case LITERAL_CHAR:
                     printf("char: '%c'", *node->literal.char_value);
                 break;
 
                 case LITERAL_STRING:  
                     printf("string: \"%s\"", node->literal.string_value);
+                break;
+
+                case LITERAL_BOOLEAN:  
+                    printf("boolean: %s", node->literal.string_value == true ? "true" : "false");
                 break;
             }
 
@@ -154,9 +154,7 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
     switch(node->node_type) {
         case NODE_PROGRAM:
             if (node->body) {
-                for (int i = 0; node->body[i] != NULL; i++) {
-                    print_ast_tree(node->body[i], new_prefix, node->body[i+1] == NULL);
-                }
+                print_ast_tree(node->body, new_prefix, node->body == NULL);
             }
         break;
 

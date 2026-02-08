@@ -220,10 +220,9 @@ ASTNode *parseProgram(Parser *p, Lexer *l) {
 
     createProgramNode(&programNode);
 
-    programNode->body = (ASTNode**)malloc(sizeof(ASTNode));
+    programNode->body = (ASTNode*)malloc(sizeof(ASTNode));
  
-    programNode->body[0] = parseModule(p,l);
-    programNode->body[1] = NULL;
+    programNode->body = parseModule(p,l);
 
     return programNode;
 }
@@ -236,7 +235,7 @@ ASTNode *parseModule(Parser *p, Lexer *l) {
     int capacity = 4;
     int count = 0;
 
-    moduleNode->module.body = (ASTNode**)malloc(sizeof(ASTNode));
+    moduleNode->module.body = (ASTNode**)malloc(sizeof(ASTNode) * capacity);
 
     while(p->current.type != TOK_EOF) {
         switch(p->current.type) {
@@ -245,7 +244,7 @@ ASTNode *parseModule(Parser *p, Lexer *l) {
                     capacity = capacity * 2;
                     moduleNode->module.body = (ASTNode**)realloc(
                         moduleNode->module.body,
-                        sizeof(ASTNode*)
+                        sizeof(ASTNode*) * capacity
                     );
                 }
 

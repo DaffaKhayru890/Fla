@@ -34,6 +34,8 @@ typedef enum {
     TOK_TYPE_DOUBLE,
     TOK_TYPE_CHAR,
     TOK_TYPE_FLOAT,
+    TOK_TYPE_BOOLEAN,
+    TOK_TYPE_STRING,
     TOK_TYPE_VOID,
 
     // basic operators

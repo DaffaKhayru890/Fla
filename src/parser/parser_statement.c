@@ -10,7 +10,7 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
     ASTNode *func_decl_node = NULL;
 
     char *func_identifier = NULL;
-    ReturnType return_type;
+    char *return_type = NULL;
 
     eatToken(p, l, TOK_KEY_FUN);
 
@@ -39,23 +39,33 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
 
         switch(p->current.type) {
             case TOK_TYPE_INT:
-                param_type = strdup("int");
+                param_type = strdup(p->current.lexeme);
                 eatToken(p,l,TOK_TYPE_INT);
             break;
 
             case TOK_TYPE_DOUBLE:
-                param_type = strdup("double");
+                param_type = strdup(p->current.lexeme);
                 eatToken(p,l,TOK_TYPE_DOUBLE);
             break;
 
             case TOK_TYPE_FLOAT:
-                param_type = strdup("float");
+                param_type = strdup(p->current.lexeme);
                 eatToken(p,l,TOK_TYPE_FLOAT);
             break;
 
             case TOK_TYPE_CHAR:
-                param_type = strdup("char");
+                param_type = strdup(p->current.lexeme);
                 eatToken(p,l,TOK_TYPE_CHAR);
+            break;
+
+            case TOK_TYPE_STRING:
+                param_type = strdup(p->current.lexeme);
+                eatToken(p,l,TOK_TYPE_STRING);
+            break;
+
+            case TOK_TYPE_BOOLEAN:
+                param_type = strdup(p->current.lexeme);
+                eatToken(p,l,TOK_TYPE_BOOLEAN);
             break;
         }
 
@@ -86,17 +96,37 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
 
     switch(p->current.type) {
         case TOK_TYPE_INT:
-            return_type = RETURN_TYPE_INT;
+            return_type = strdup(p->current.lexeme);
             eatToken(p,l,TOK_TYPE_INT);
         break;
 
         case TOK_TYPE_DOUBLE:
-            return_type = RETURN_TYPE_DOUBLE;
+            return_type = strdup(p->current.lexeme);
             eatToken(p,l,TOK_TYPE_DOUBLE);
         break;
 
+        case TOK_TYPE_FLOAT:
+            return_type = strdup(p->current.lexeme);
+            eatToken(p,l,TOK_TYPE_FLOAT);
+        break;
+
+        case TOK_TYPE_CHAR:
+                return_type = strdup(p->current.lexeme);
+                eatToken(p,l,TOK_TYPE_CHAR);
+        break;
+
+        case TOK_TYPE_STRING:
+            return_type = strdup(p->current.lexeme);
+            eatToken(p,l,TOK_TYPE_STRING);
+        break;
+
+        case TOK_TYPE_BOOLEAN:
+            return_type = strdup(p->current.lexeme);
+            eatToken(p,l,TOK_TYPE_BOOLEAN);
+        break;
+
         case TOK_TYPE_VOID:
-            return_type = RETURN_TYPE_VOID;
+            return_type = strdup(p->current.lexeme);
             eatToken(p,l,TOK_TYPE_VOID);
         break;
     }
@@ -108,17 +138,6 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
     func_decl_node->function_delcaration.parameters = params_node;
 
     func_decl_node->function_delcaration.body = parseBlock(p, l);
-
-    bool is_void = return_type == RETURN_TYPE_VOID;
-
-    if(!is_void) {
-        bool has_return = hasReturnStatment(func_decl_node->function_delcaration.body);
-
-        if(!has_return) {
-            fprintf(stderr, "Error: no return statement\n");
-            exit(EXIT_FAILURE);
-        }
-    }
 
     free(func_identifier);
 
@@ -268,11 +287,6 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
         
             var_decl_node->variable_declaration.init = NULL;
 
-            if(var_decl_node->variable_declaration.variable_type == VARIABLE_TYPE_CONST) {
-                fprintf(stderr, "Error: const variable must be initialized\n");
-                exit(EXIT_FAILURE);
-            }
-
             return var_decl_node;
         break;
 
@@ -305,11 +319,7 @@ ASTNode *parseReturn(Parser *p, Lexer *l) {
 
     eatToken(p,l,TOK_KEY_RETURN);
 
-    return_node->return_function.expression = (ASTNode*)malloc(sizeof(ASTNode));
-    
-    literal_node = parseLiteral(p,l);
-
-    return_node->return_function.expression = literal_node;
+    return_node->return_function.expression = parseExpression(p,l,PREC_NONE);
 
     eatToken(p,l,TOK_SEMICOLON);
 

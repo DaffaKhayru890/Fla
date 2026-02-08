@@ -174,6 +174,7 @@ void createProgramNode(ASTNode **handle_node) {
     *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
 
     (*handle_node)->node_type = NODE_PROGRAM;
+    (*handle_node)->body = NULL;
 }
 
 void createModuleNode(ASTNode **handle_node, char *name) {
@@ -186,7 +187,7 @@ void createModuleNode(ASTNode **handle_node, char *name) {
 
 // ================================= Statement node =================================
 
-void createFuncDeclNode(ASTNode **handle_node, char *identifier, ReturnType return_type, int param_count) {
+void createFuncDeclNode(ASTNode **handle_node, char *identifier, char *return_type, int param_count) {
     *handle_node = (ASTNode*)malloc(sizeof(ASTNode));
 
     (*handle_node)->node_type = NODE_FUNCTION_DECLARATION;
@@ -379,6 +380,10 @@ void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, void *va
         break;
 
         case LITERAL_STRING:
+            (*handle_node)->literal.string_value = value;
+        break;
+
+        case LITERAL_BOOLEAN:
             (*handle_node)->literal.string_value = value;
         break;
     } 

@@ -10,17 +10,9 @@ typedef enum {
     VARIABLE_TYPE_CONST
 }VarType;
 
-typedef enum {
-    RETURN_TYPE_INT,
-    RETURN_TYPE_DOUBLE,
-    RETURN_TYPE_FLOAT,
-    RETURN_TYPE_CHAR,
-    RETURN_TYPE_VOID,
-}ReturnType;
-
 typedef struct {
     char *identifier;
-    ReturnType return_type;
+    char *return_type;
     int param_count;
     ASTNode **parameters;  
     ASTNode *body;  

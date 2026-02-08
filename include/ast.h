@@ -20,7 +20,7 @@ typedef struct {
 
 struct ASTNode {
     NodeType node_type;
-    ASTNode **body;
+    ASTNode *body;
     
     union {
         Module module;
@@ -56,7 +56,7 @@ void createModuleNode(ASTNode **handle_node, char *name);
 
 void createParamNode(ASTNode **handle_node, char *name, char *type);
 
-void createFuncDeclNode(ASTNode **handle_node, char *identifier, ReturnType return_type, int param_count);
+void createFuncDeclNode(ASTNode **handle_node, char *identifier, char *return_type, int param_count);
 void createReturnNode(ASTNode **handle_node);
 void createBlockNode(ASTNode **handle_node, int statements_count);
 void createVarDeclNode(ASTNode **handle_node, char *identifier, char *type, VarType variable_type);
@@ -77,8 +77,6 @@ void createLiteralNode(ASTNode **handle_node, LiteralType literal_type, void *va
 void createArrayNode(ASTNode **handle_node, int literal_count);
 void createAssignmentNode(ASTNode **handle_node);
 void createIdentifierNode(ASTNode **handle_node, char *identifier);
-
-bool hasReturnStatment(ASTNode *block);
 
 void freeAstNode(ASTNode *node, bool freeSelf);
 

@@ -148,6 +148,8 @@ static Token scanKeyword(Lexer *l) {
     if(strcmp(token.lexeme, "char") == 0) return createToken(l, "char", TOK_TYPE_CHAR);
     if(strcmp(token.lexeme, "float") == 0) return createToken(l, "float", TOK_TYPE_FLOAT);
     if(strcmp(token.lexeme, "void") == 0) return createToken(l, "void", TOK_TYPE_VOID);
+    if(strcmp(token.lexeme, "boolean") == 0) return createToken(l, "boolean", TOK_TYPE_BOOLEAN);
+    if(strcmp(token.lexeme, "string") == 0) return createToken(l, "string", TOK_TYPE_STRING);
 
     token.type = TOK_IDENTIFIER;
 
@@ -246,8 +248,9 @@ static Token scanDigit(Lexer *l) {
 
     Token token;
 
-    bool isFloat = false;
     int posLexeme = 0;
+    bool hasDecimal = false;
+    bool isFloat = false;
 
     while(isdigit(peek(l)) && posLexeme < MAX_LITERAL - 1) {
         token.lexeme[posLexeme] = l->current;
@@ -258,7 +261,7 @@ static Token scanDigit(Lexer *l) {
     }
 
     if(peek(l) == '.' && isdigit(peekNext(l))) {
-        isFloat = true;
+        hasDecimal = true;
         token.lexeme[posLexeme++] = '.';
         advanced(l);
 
@@ -269,9 +272,21 @@ static Token scanDigit(Lexer *l) {
         
     }
 
-    token.lexeme[posLexeme] = '\0';
+    if(hasDecimal){
+        if(peek(l) == 'f' || peek(l) == 'F') {
+            isFloat = true;
+            token.lexeme[posLexeme++] = peek(l);
+            advanced(l);
+        }
+    }
 
-    token.type = isFloat ? TOK_DOUBLE : TOK_INT;
+    if(hasDecimal) {
+        token.type = isFloat ? TOK_FLOAT : TOK_DOUBLE;
+    }else {
+        token.type = TOK_INT;
+    }
+
+    token.lexeme[posLexeme] = '\0';
     
     return token;
 }

@@ -1,6 +1,34 @@
 fun main() -> int {
-    var angka: int;
-    angka += 1 + 2;
 
     return 0;
+}
+
+fun main() -> double {
+
+    return 1.2;
+}
+
+fun main() -> float {
+
+    return 2.4f;
+}
+
+fun main() -> char {
+
+    return 'a';
+}
+
+fun main() -> string {
+
+    return "hello";
+}
+
+fun main() -> boolean {
+
+    return true;
+}
+
+fun main() -> void {
+
+    return;
 }
