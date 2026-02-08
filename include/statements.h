@@ -5,11 +5,6 @@
 #include "./literal.h"
 #include <stdbool.h>
 
-typedef enum {
-    VARIABLE_TYPE_VAR,
-    VARIABLE_TYPE_CONST
-}VarType;
-
 typedef struct {
     char *identifier;
     char *return_type;
@@ -31,7 +26,7 @@ typedef struct {
     char *identifier;
     char *type;
     ASTNode *init;
-    VarType variable_type;
+    bool is_const;
 }VariableDeclaration;
 
 typedef struct {

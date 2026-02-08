@@ -1,34 +1,27 @@
-fun main() -> int {
+fun main() -> void {
+    return;
+}
 
+fun main() -> int {
     return 0;
 }
 
 fun main() -> double {
-
-    return 1.2;
+    return 2.5;
 }
 
 fun main() -> float {
-
-    return 2.4f;
+    return 2.5f;
 }
 
 fun main() -> char {
-
     return 'a';
 }
 
 fun main() -> string {
-
     return "hello";
 }
 
 fun main() -> boolean {
-
-    return true;
-}
-
-fun main() -> void {
-
-    return;
+    return false;
 }

@@ -84,7 +84,6 @@ typedef enum {
     TOK_INT,
     TOK_FLOAT,
     TOK_DOUBLE,
-    TOK_BOOLEAN,
 
     // others
     TOK_ERROR,

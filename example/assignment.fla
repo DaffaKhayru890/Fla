@@ -1,0 +1,8 @@
+fun main() -> void {
+    var angka: int;
+    angka = 2;
+    angka += 2;
+    angka -= 2;
+    angka *= 2;
+    angka /= 2;
+}

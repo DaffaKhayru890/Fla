@@ -79,12 +79,11 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
 
         ASTNode *param_node = NULL;
 
-        createParamNode(&param_node, param_identifier, param_type);
+        createParamNode(&param_node);
+        param_node->parameter.name = param_identifier;
+        param_node->parameter.type = param_type;
         params_node[params_count] = param_node;
         params_count++;
-
-        free(param_identifier);
-        free(param_type);
 
         if(match(p, TOK_COMMA)) {
             eatToken(p, l, TOK_COMMA);
@@ -133,13 +132,14 @@ ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
 
     eatToken(p, l, TOK_LBRACE);
 
-    createFuncDeclNode(&func_decl_node, func_identifier, return_type, params_count);
+    createFuncDeclNode(&func_decl_node);
 
+    func_decl_node->function_delcaration.identifier = func_identifier;
+    func_decl_node->function_delcaration.return_type = return_type;
+    func_decl_node->function_delcaration.param_count = params_count;
     func_decl_node->function_delcaration.parameters = params_node;
 
     func_decl_node->function_delcaration.body = parseBlock(p, l);
-
-    free(func_identifier);
 
     return func_decl_node;
 }
@@ -150,7 +150,9 @@ ASTNode *parseBlock(Parser *p, Lexer *l) {
     
     ASTNode *block_node = NULL;
     
-    createBlockNode(&block_node, statements_count);
+    createBlockNode(&block_node);
+
+    block_node->block_statement.statements_count = statements_count;
 
     block_node->block_statement.statements = (ASTNode**)malloc(sizeof(ASTNode*) * statements_capacity);
 
@@ -164,7 +166,10 @@ ASTNode *parseBlock(Parser *p, Lexer *l) {
                     eatToken(p,l,TOK_SEMICOLON);
                 }else if(
                     p->next.type == TOK_ASSIGNMENT ||
-                    p->next.type == TOK_ASSIGN_PLUS
+                    p->next.type == TOK_ASSIGN_PLUS ||
+                    p->next.type == TOK_ASSIGN_MINUS ||
+                    p->next.type == TOK_ASSIGN_MULTIPLY ||
+                    p->next.type == TOK_ASSIGN_DIVISION
                 ) {
                     statement_node = parseAssignment(p,l);
                     eatToken(p,l,TOK_SEMICOLON);
@@ -204,14 +209,14 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
     char *var_identifier = NULL;
     char *var_type = NULL;
 
-    VarType variable_type;
+    bool is_const;
 
     if(match(p, TOK_KEY_VAR)) {
         eatToken(p,l,TOK_KEY_VAR);
-        variable_type = VARIABLE_TYPE_VAR;
+        is_const = false;
     }else if(match(p, TOK_KEY_CONST)) {
         eatToken(p,l,TOK_KEY_CONST);
-        variable_type = VARIABLE_TYPE_CONST;
+        is_const = true;
     }
     
     if(match(p, TOK_IDENTIFIER)) {
@@ -236,7 +241,8 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
 
         case TOK_TYPE_DOUBLE:
             if(p->next.type == TOK_LBRACKETS && p->nextNext.type == TOK_RBRACKETS) {
-                var_type = strdup("array int");
+                eatToken(p,l,TOK_TYPE_DOUBLE);
+                var_type = strdup("array double");
                 eatToken(p,l,TOK_LBRACKETS);
                 eatToken(p,l,TOK_RBRACKETS);
             }else {
@@ -247,7 +253,8 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
 
         case TOK_TYPE_FLOAT:
             if(p->next.type == TOK_LBRACKETS && p->nextNext.type == TOK_RBRACKETS) {
-                var_type = strdup("array int");
+                eatToken(p,l,TOK_TYPE_FLOAT);
+                var_type = strdup("array float");
                 eatToken(p,l,TOK_LBRACKETS);
                 eatToken(p,l,TOK_RBRACKETS);
             }else {
@@ -258,7 +265,8 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
 
         case TOK_TYPE_CHAR:
             if(p->next.type == TOK_LBRACKETS && p->nextNext.type == TOK_RBRACKETS) {
-                var_type = strdup("array int");
+                eatToken(p,l,TOK_TYPE_CHAR);
+                var_type = strdup("array char");
                 eatToken(p,l,TOK_LBRACKETS);
                 eatToken(p,l,TOK_RBRACKETS);
             }else {
@@ -267,19 +275,32 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
             }
         break;
 
-        case TOK_LBRACKETS:
-            if(p->next.type == TOK_RBRACKETS) {
-                var_type = strdup("array");
+        case TOK_TYPE_STRING:
+            if(p->next.type == TOK_LBRACKETS && p->nextNext.type == TOK_RBRACKETS) {
+                eatToken(p,l,TOK_TYPE_STRING);
+                var_type = strdup("array string");
+                eatToken(p,l,TOK_LBRACKETS);
+                eatToken(p,l,TOK_RBRACKETS);
+            }else {
+                var_type = strdup(p->current.lexeme);
+                eatToken(p,l,TOK_TYPE_STRING);
             }
-            eatToken(p,l,TOK_LBRACKETS);
-            eatToken(p,l,TOK_RBRACKETS);
+        break;
+
+        case TOK_TYPE_BOOLEAN:
+            var_type = strdup(p->current.lexeme);
+            eatToken(p,l,TOK_TYPE_BOOLEAN);
         break;
     }
 
-    createVarDeclNode(&var_decl_node, var_identifier, var_type, variable_type);
+    createVarDeclNode(&var_decl_node);
+
+    var_decl_node->variable_declaration.identifier = var_identifier;
+    var_decl_node->variable_declaration.type = var_type;
+    var_decl_node->variable_declaration.is_const = is_const;
     
-    free(var_identifier);
-    free(var_type);
+    // free(var_identifier);
+    // free(var_type);
 
     switch(p->current.type) {
         case TOK_SEMICOLON:
@@ -313,12 +334,16 @@ ASTNode *parseSwitch(Parser *p, Lexer *l);
 
 ASTNode *parseReturn(Parser *p, Lexer *l) {
     ASTNode *return_node = NULL;
-    ASTNode *literal_node = NULL;
 
     createReturnNode(&return_node);
 
     eatToken(p,l,TOK_KEY_RETURN);
 
+    if(match(p,TOK_SEMICOLON)) {
+        eatToken(p,l,TOK_SEMICOLON);
+        return return_node;
+    }
+    
     return_node->return_function.expression = parseExpression(p,l,PREC_NONE);
 
     eatToken(p,l,TOK_SEMICOLON);

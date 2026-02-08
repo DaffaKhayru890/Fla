@@ -1,0 +1,3 @@
+fun main(param: string, param: int, param: double, param: char, param: boolean, param: float) -> void {
+    return;
+}

@@ -27,16 +27,6 @@ typedef struct {
 }Ternary;
 
 typedef struct {
-    ASTNode *expression;
-}Grouping;
-
-typedef struct {    
-    int count;
-    int capacity;
-    ASTNode **body;
-}Compound;
-
-typedef struct {
     char *function_name;
     ASTNode **arguments;     
     int arg_count;
@@ -50,6 +40,7 @@ typedef struct {
 typedef struct {
     ASTNode *expression;
     char *left;
+    char *identifier;
 }Assignment;
 
 #endif

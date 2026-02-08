@@ -1,0 +1,9 @@
+fun main() -> void {
+    var con1: int = 1;
+    var con2: double = 2.2;
+    var con3: float = 2.4f;
+    var con4: char = 'a';
+    var con5: string = "hello";
+    var con6: boolean = true;
+    var con7: boolean = false;
+}

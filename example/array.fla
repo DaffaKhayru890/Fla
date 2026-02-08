@@ -1,0 +1,7 @@
+fun main() -> void {
+    var con1: int[] = {1,2,3,4,5};
+    var con2: double[] = {1.1,2.2,3.3,4.4};
+    var con3: float[] = {1.1f,1.2f,1.3f};
+    var con4: char[] = {'c','h','d'};
+    var con5: string[] = {"hello", "osaka", "tokyo"};
+}

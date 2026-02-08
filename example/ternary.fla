@@ -1,0 +1,4 @@
+fun main() -> void {
+    var condition: boolean = true;
+    var angka: int = condition == true ? 1 : 2;
+}

@@ -114,7 +114,7 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
                 break;
 
                 case LITERAL_BOOLEAN:  
-                    printf("boolean: %s", node->literal.string_value == true ? "true" : "false");
+                    printf("boolean: %s", node->literal.boolean_value == true ? "true" : "false");
                 break;
             }
 
@@ -131,10 +131,6 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
             
         case NODE_BLOCK_STATEMENT:
             printf(" [statements: %d]", node->block_statement.statements_count);
-        break;
-            
-        case NODE_COMPOUND_EXPRESSION:
-            printf(" [count: %d]", node->compound.count);
         break;
 
         case NODE_ARRAY:
@@ -223,19 +219,6 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
             print_ast_tree(node->tenary.else_expr, new_prefix, true);
             break;
             
-        case NODE_GROUPING_EXPRESSION:
-            print_ast_tree(node->grouping.expression, new_prefix, true);
-        break;
-            
-        case NODE_COMPOUND_EXPRESSION:
-            for (int i = 0; i < node->compound.count; i++) {
-                print_ast_tree(node->compound.body[i], 
-                    new_prefix,
-                    i == node->compound.count - 1
-                );
-            }
-        break;
-            
         case NODE_FUNCTION_CALL_EXPRESSION:
             for (int i = 0; i < node->function_call.arg_count; i++) {
                 print_ast_tree(
@@ -318,7 +301,7 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
 }
 
 int main() {
-    char *source = readFileToString("../example/example.fla");
+    char *source = readFileToString("../example/binary.fla");
 
     Lexer lexer;
     Token token;
@@ -330,8 +313,6 @@ int main() {
     createParser(&parser, &lexer);
 
     ASTNode *program = parseProgram(&parser, &lexer);
-
-    // printf("%p", program->literal.char_value);
 
     print_ast_tree(program, "", true);
 

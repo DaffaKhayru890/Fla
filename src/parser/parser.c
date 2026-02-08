@@ -39,6 +39,8 @@ const char *TokenTypeString[] = {
     "TOK_TYPE_DOUBLE",
     "TOK_TYPE_CHAR",
     "TOK_TYPE_FLOAT",
+    "TOK_TYPE_BOOLEAN",
+    "TOK_TYPE_STRING",
     "TOK_TYPE_VOID",
 
     // basic operators
@@ -92,39 +94,12 @@ const char *TokenTypeString[] = {
     "TOK_INT",
     "TOK_FLOAT",
     "TOK_DOUBLE",
-    "TOK_BOOLEAN",
 
     // others
     "TOK_ERROR",
     "TOK_UNKNOWN",
     "TOK_EOF"
 };
-
-char* getOperatorString(TokenType type) {
-    switch(type) {
-        case TOK_PLUS: return "+";
-        case TOK_MINUS: return "-";
-        case TOK_MULTIPLY: return "*";
-        case TOK_DIVISION: return "/";
-        case TOK_MODULO: return "%";
-        case TOK_EXPONENT: return "**";
-        case TOK_OP_EQ: return "==";
-        case TOK_OP_NEQ: return "!=";
-        case TOK_OP_LT: return "<";
-        case TOK_OP_LTE: return "<=";
-        case TOK_OP_GT: return ">";
-        case TOK_OP_GTE: return ">=";
-        case TOK_OP_AND: return "&&";
-        case TOK_OP_OR: return "||";
-        case TOK_ASSIGNMENT: return "=";
-        case TOK_ASSIGN_PLUS: return "+=";
-        case TOK_ASSIGN_MINUS: return "-=";
-        case TOK_ASSIGN_MULTIPLY: return "*=";
-        case TOK_ASSIGN_DIVISION: return "/=";
-        case TOK_ASSIGN_MODULO: return "%=";
-        default: return "UNKNOWN";
-    }
-}
 
 // =============================== Helper Function ===============================
 
@@ -230,7 +205,9 @@ ASTNode *parseProgram(Parser *p, Lexer *l) {
 ASTNode *parseModule(Parser *p, Lexer *l) {
     ASTNode *moduleNode = NULL;
 
-    createModuleNode(&moduleNode, "main");
+    createModuleNode(&moduleNode);
+
+    moduleNode->module.name = "main";
 
     int capacity = 4;
     int count = 0;
