@@ -28,6 +28,7 @@ typedef struct {
 
 typedef struct {
     char *function_name;
+    ASTNode *identifier;
     ASTNode **arguments;     
     int arg_count;
 }FunctionCall;

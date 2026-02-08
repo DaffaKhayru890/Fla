@@ -366,7 +366,7 @@ Token getNextToken(Lexer *l) {
         case ',': return createToken(l, ",", TOK_COMMA); break;
         case ':': return createToken(l, ":", TOK_COLON); break;
         case ';': return createToken(l, ";", TOK_SEMICOLON); break;
-        case '?': return createToken(l, "?", TOK_OP_UNARY); break;
+        case '?': return createToken(l, "?", TOK_OP_TENARY); break;
         case '=': return createToken(l, "=", TOK_ASSIGNMENT); break;
         case '%': return createToken(l, "%", TOK_MODULO); break;
         case '^': return createToken(l, "^", TOK_EXPONENT); break;

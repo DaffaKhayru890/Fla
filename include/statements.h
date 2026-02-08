@@ -30,9 +30,8 @@ typedef struct {
 }VariableDeclaration;
 
 typedef struct {
-    int elseif_count;
     ASTNode *condition;     
-    ASTNode **elseif_branch;   
+    ASTNode *than_branch;   
     ASTNode *else_branch;   
 }If;
 

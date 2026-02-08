@@ -5,6 +5,101 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+static const char *TokenTypeString[] = {
+    // base keyword
+    "TOK_KEY_USE",
+    "TOK_KEY_FUN",
+    "TOK_KEY_RETURN",
+    "TOK_KEY_VAR",
+    "TOK_KEY_CONST",
+    "TOK_KEY_IF",
+    "TOK_KEY_ELSE",
+    "TOK_KEY_BREAK",
+    "TOK_KEY_CONTINUE",
+    "TOK_KEY_WHILE",
+    "TOK_KEY_FOR",
+    "TOK_KEY_SWITCH",
+    "TOK_KEY_TRUE",
+    "TOK_KEY_FALSE",
+
+    // delimiters
+    "TOK_LPAREN",
+    "TOK_RPAREN",
+    "TOK_LBRACE",
+    "TOK_RBRACE",
+    "TOK_LBRACKETS",
+    "TOK_RBRACKETS",
+
+    // unique
+    "TOK_IDENTIFIER",
+
+    // type keyword
+    "TOK_TYPE_INT",
+    "TOK_TYPE_DOUBLE",
+    "TOK_TYPE_CHAR",
+    "TOK_TYPE_FLOAT",
+    "TOK_TYPE_BOOLEAN",
+    "TOK_TYPE_STRING",
+    "TOK_TYPE_VOID",
+
+    // basic operators
+    "TOK_PLUS",
+    "TOK_MINUS",
+    "TOK_MULTIPLY",
+    "TOK_DIVISION",
+    "TOK_MODULO",
+    "TOK_EXPONENT",
+
+    // condition 
+    "TOK_OP_EQ",
+    "TOK_OP_NEQ",
+    "TOK_OP_LT",
+    "TOK_OP_LTE",
+    "TOK_OP_GT",
+    "TOK_OP_GTE",
+    "TOK_OP_AND",
+    "TOK_OP_OR",
+
+    // single marks
+    "TOK_OP_TENARY",
+    "TOK_COMMA",
+    "TOK_SEMICOLON",
+    "TOK_COLON",
+    "TOK_ASSIGNMENT",
+    "TOK_NOT",
+
+    // two chars
+    "TOK_RARROW",
+
+    // assignment
+    "TOK_ASSIGN_PLUS",
+    "TOK_ASSIGN_MINUS",
+    "TOK_ASSIGN_MULTIPLY",
+    "TOK_ASSIGN_DIVISION",
+    "TOK_ASSIGN_MODULO",
+    "TOK_ASSIGN_BITWISE_AND",
+    "TOK_ASSIGN_BITWISE_OR",
+    "TOK_ASSIGN_BITWISE_XOR",
+    "TOK_ASSIGN_LEFT_SHIFT",
+    "TOK_ASSIGN_RIGHT_SHIFT",
+
+    // decrement and increment
+    "TOK_INCREMENT",
+    "TOK_DECREMENT",
+
+    // literal
+    "TOK_STRING",
+    "TOK_CHAR",
+    "TOK_INT",
+    "TOK_FLOAT",
+    "TOK_DOUBLE",
+
+    // others
+    "TOK_ERROR",
+    "TOK_UNKNOWN",
+    "TOK_EOF"
+};
+
 ASTNode *parseFuncDecl(Parser *p, Lexer *l) {
     ASTNode **params_node = NULL;
     ASTNode *func_decl_node = NULL;
@@ -158,6 +253,9 @@ ASTNode *parseBlock(Parser *p, Lexer *l) {
 
     while(p->current.type != TOK_RBRACE && p->current.type != TOK_EOF) {
         ASTNode *statement_node = NULL;
+
+        printf("DEBUG parseBlock: current token = %s (lexeme: %s)\n", 
+           TokenTypeString[p->current.type], p->current.lexeme);
         
         switch(p->current.type) {
             case TOK_IDENTIFIER:
@@ -179,6 +277,10 @@ ASTNode *parseBlock(Parser *p, Lexer *l) {
             case TOK_KEY_VAR:
             case TOK_KEY_CONST:
                 statement_node = parseVarDecl(p,l);
+            break;
+
+            case TOK_KEY_IF:
+                statement_node = parseIf(p,l);
             break;
 
             case TOK_KEY_RETURN:
@@ -298,9 +400,6 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
     var_decl_node->variable_declaration.identifier = var_identifier;
     var_decl_node->variable_declaration.type = var_type;
     var_decl_node->variable_declaration.is_const = is_const;
-    
-    // free(var_identifier);
-    // free(var_type);
 
     switch(p->current.type) {
         case TOK_SEMICOLON:
@@ -327,7 +426,32 @@ ASTNode *parseVarDecl(Parser *p, Lexer *l) {
     }
 }
 
-ASTNode *parseIf(Parser *p, Lexer *l);
+ASTNode *parseIf(Parser *p, Lexer *l) {
+    ASTNode *if_node = NULL;
+
+    eatToken(p,l,TOK_KEY_IF);
+
+    createIfNode(&if_node);
+
+    eatToken(p,l,TOK_LPAREN);
+
+    if_node->if_statement.condition = parseExpression(p,l,PREC_NONE);
+
+    eatToken(p,l,TOK_RPAREN);
+    eatToken(p, l, TOK_LBRACE);
+
+    if_node->if_statement.than_branch = parseBlock(p,l);
+
+    if(match(p,TOK_KEY_ELSE)) {
+        eatToken(p,l,TOK_KEY_ELSE);
+        eatToken(p,l,TOK_LBRACE);
+
+        if_node->if_statement.else_branch = parseBlock(p,l);
+    }
+
+    return if_node;
+}
+
 ASTNode *parseWhile(Parser *p, Lexer *l);
 ASTNode *parseFor(Parser *p, Lexer *l);
 ASTNode *parseSwitch(Parser *p, Lexer *l);

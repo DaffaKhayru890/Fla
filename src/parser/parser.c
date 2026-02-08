@@ -62,7 +62,7 @@ const char *TokenTypeString[] = {
     "TOK_OP_OR",
 
     // single marks
-    "TOK_OP_UNARY",
+    "TOK_OP_TENARY",
     "TOK_COMMA",
     "TOK_SEMICOLON",
     "TOK_COLON",
@@ -142,6 +142,9 @@ Precedence getPrecedence(TokenType type) {
         case TOK_DECREMENT:
             return PREC_POSTFIX;
         
+        case TOK_OP_TENARY:
+            return PREC_TERNARY;
+        
         default:
             return PREC_NONE;
     }
@@ -212,7 +215,7 @@ ASTNode *parseModule(Parser *p, Lexer *l) {
     int capacity = 4;
     int count = 0;
 
-    moduleNode->module.body = (ASTNode**)malloc(sizeof(ASTNode) * capacity);
+    moduleNode->module.body = (ASTNode**)malloc(sizeof(ASTNode*) * capacity);
 
     while(p->current.type != TOK_EOF) {
         switch(p->current.type) {
@@ -225,7 +228,8 @@ ASTNode *parseModule(Parser *p, Lexer *l) {
                     );
                 }
 
-                moduleNode->module.body[count++] = parseFuncDecl(p, l);
+                moduleNode->module.body[count] = parseFuncDecl(p, l);
+                count++;
             break;
         }
     }

@@ -1,4 +1,6 @@
 fun main() -> void {
+    var num1: int = 1;
+    var num2: int = 2;
     var condition: boolean = true;
-    var angka: int = condition == true ? 1 : 2;
+    var angka: int = condition ? "hello" : "goodbye";
 }

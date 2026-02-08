@@ -40,6 +40,26 @@ ASTNode *parseAtom(Parser *p, Lexer *l) {
     return atom;
 }
 
+ASTNode *parseTenary(Parser *p, Lexer *l, ASTNode *condition) {
+    ASTNode *tenary_node = NULL;
+
+    eatToken(p,l,TOK_OP_TENARY);
+
+    ASTNode *then_expression = parseExpression(p,l,PREC_TERNARY);
+
+    eatToken(p,l,TOK_COLON);
+
+    ASTNode *else_expression = parseExpression(p,l,PREC_TERNARY);
+
+    createTenaryNode(&tenary_node);
+
+    tenary_node->tenary.condition = condition;
+    tenary_node->tenary.then_expr = then_expression;
+    tenary_node->tenary.else_expr = else_expression;
+
+    return tenary_node;
+}
+
 ASTNode *parseInfix(Parser *p, Lexer *l, ASTNode *left) {
     char *op = strdup(p->current.lexeme);
 
@@ -124,10 +144,13 @@ ASTNode *parseExpression(Parser *p, Lexer *l, Precedence min_precedence) {
     while(min_precedence < getPrecedence(p->current.type)) {
         switch(p->current.type) {
             case TOK_INCREMENT:
-            case TOK_DECREMENT: {
+            case TOK_DECREMENT: 
                 left = parsePostfix(p,l,left);
-                break;
-            }
+            break;
+
+            case TOK_OP_TENARY:
+                left = parseTenary(p,l,left);
+            break;
 
             default:
                 left = parseInfix(p,l,left);
@@ -162,6 +185,11 @@ ASTNode *parseFunctionCall(Parser *p, Lexer *l) {
     while(p->current.type != TOK_RPAREN && p->current.type != TOK_EOF) {
         ASTNode *literal_node = NULL;
 
+        if(match(p, TOK_COMMA)) {
+            eatToken(p,l,TOK_COMMA);
+            continue;
+        }
+
         switch(p->current.type) {
             case TOK_INT:
             case TOK_DOUBLE:
@@ -169,6 +197,13 @@ ASTNode *parseFunctionCall(Parser *p, Lexer *l) {
             case TOK_CHAR:
             case TOK_STRING:
                 literal_node = parseLiteral(p,l);
+                function_call_node->function_call.arguments[args_count] = literal_node;
+                args_count++;
+            break;
+
+            case TOK_IDENTIFIER:
+                function_call_node->function_call.arguments[args_count] = parseIdentifier(p,l,p->current.lexeme);
+                args_count++;
             break;
         }
 
@@ -179,21 +214,10 @@ ASTNode *parseFunctionCall(Parser *p, Lexer *l) {
                 sizeof(ASTNode*) * args_capacity
             );
         }
-
-    
-        function_call_node->function_call.arguments[args_count] = literal_node;
-
-        if(match(p, TOK_COMMA)) {
-            eatToken(p,l,TOK_COMMA);
-        }
-
-        args_count++;
     }
 
     function_call_node->function_call.arguments[args_count] = NULL;
     function_call_node->function_call.arg_count = args_count;
-
-    free(function_call_name);
 
     eatToken(p,l,TOK_RPAREN);
 

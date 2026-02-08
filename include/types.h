@@ -52,7 +52,7 @@ typedef enum {
     TOK_OP_OR,
 
     // single marks
-    TOK_OP_UNARY,
+    TOK_OP_TENARY,
     TOK_COMMA,
     TOK_SEMICOLON,
     TOK_COLON,

@@ -98,7 +98,7 @@ void freeAstNode(ASTNode *node, bool freeSelf) {
         case NODE_IF_STATEMENT:
             freeNode(&node->if_statement.condition);
             freeNode(&node->if_statement.else_branch);
-            freeArrayNode(&node->if_statement.elseif_branch);
+            freeNode(&node->if_statement.than_branch);
         break;
 
         case NODE_WHILE_STATEMENT:
@@ -219,7 +219,7 @@ void createIfNode(ASTNode **handle_node) {
     (*handle_node)->node_type = NODE_IF_STATEMENT;
     (*handle_node)->if_statement.else_branch = NULL;
     (*handle_node)->if_statement.condition = NULL;
-    (*handle_node)->if_statement.elseif_branch = NULL;
+    (*handle_node)->if_statement.than_branch = NULL;
 }
 
 void createWhileNode(ASTNode **handle_node) {

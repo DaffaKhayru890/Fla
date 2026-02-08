@@ -121,10 +121,6 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
             printf("]");
         break;
             
-        case NODE_IF_STATEMENT:
-            printf(" [elseif: %d]", node->if_statement.elseif_count);
-        break;
-            
         case NODE_SWITCH_STATEMENT:
             printf(" [cases: %d]", node->switch_statement.case_count);
         break;
@@ -150,7 +146,7 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
     switch(node->node_type) {
         case NODE_PROGRAM:
             if (node->body) {
-                print_ast_tree(node->body, new_prefix, node->body == NULL);
+                print_ast_tree(node->body, new_prefix, true);
             }
         break;
 
@@ -231,13 +227,8 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
         case NODE_IF_STATEMENT:
             print_ast_tree(node->if_statement.condition, new_prefix, false);
             
-            if (node->if_statement.elseif_branch) {
-                for (int i = 0; node->if_statement.elseif_branch[i] != NULL; i++) {
-                    bool is_last_branch = node->if_statement.elseif_branch[i+1] == NULL &&
-                                         node->if_statement.else_branch == NULL;
-                    print_ast_tree(node->if_statement.elseif_branch[i], 
-                                   new_prefix, is_last_branch);
-                }
+            if (node->if_statement.than_branch) {
+                print_ast_tree(node->if_statement.than_branch, new_prefix, false);
             }
 
             if (node->if_statement.else_branch) {
@@ -301,7 +292,7 @@ void print_ast_tree(ASTNode* node, const char* prefix, bool is_last) {
 }
 
 int main() {
-    char *source = readFileToString("../example/binary.fla");
+    char *source = readFileToString("../example/ifStatement.fla");
 
     Lexer lexer;
     Token token;

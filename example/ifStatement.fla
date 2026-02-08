@@ -1,0 +1,7 @@
+fun main() -> void {
+    if(1 < 2) {
+        print("Hello");
+    }else {
+        print("Goodbye");
+    }
+}

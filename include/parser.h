@@ -44,6 +44,7 @@ ASTNode *parseSwitch(Parser *p, Lexer *l);
 ASTNode *parseReturn(Parser *p, Lexer *l);
 
 ASTNode *parseAtom(Parser *p, Lexer *l);
+ASTNode *parseTenary(Parser *p, Lexer *l, ASTNode *condition);
 ASTNode *parseInfix(Parser *p, Lexer *l, ASTNode *left);
 ASTNode *parsePrefix(Parser *p, Lexer *l);
 ASTNode *parsePostfix(Parser *p, Lexer *l, ASTNode *left);
